@@ -1,0 +1,29 @@
+@model BC_ASP.Models.Category
+@{
+    ViewData["Title"] = "Sửa danh mục";
+}
+
+<h1>Sửa danh mục</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id">
+    <div class="mb-3">
+        <label class="form-label">Tên danh mục</label>
+        <input asp-for="Name" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Mô tả</label>
+        <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">URL Hình ảnh</label>
+        <input asp-for="ImageUrl" class="form-control">
+    </div>
+    <div class="mb-3 form-check">
+        <input asp-for="IsActive" class="form-check-input">
+        <label class="form-check-label">Hoạt động</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    <a asp-action="Index" class="btn btn-secondary">Quay lại</a>
+</form>
+

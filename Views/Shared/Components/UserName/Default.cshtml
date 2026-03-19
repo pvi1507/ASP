@@ -1,0 +1,21 @@
+<div class="dropdown">
+  @{
+    var name = ViewBag.UserFullName ?? User.Identity?.Name ?? "User";
+    }
+<button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+    Xin chào, @name!
+</button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><a class="dropdown-item" asp-controller="Account" asp-action="Profile"><i class="fas fa-user me-2"></i> Hồ sơ</a></li>
+    <li><a class="dropdown-item" asp-controller="Account" asp-action="ChangePassword"><i class="fas fa-lock me-2"></i> Đổi mật khẩu</a></li>
+    @if (User.IsInRole("Admin"))
+    {
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" asp-controller="Account" asp-action="UserList"><i class="fas fa-users me-2"></i> Quản lý user</a></li>
+    }
+    <li><hr class="dropdown-divider"></li>
+    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+      <button type="submit" class="dropdown-item text-danger"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</button>
+    </form>
+  </ul>
+</div>

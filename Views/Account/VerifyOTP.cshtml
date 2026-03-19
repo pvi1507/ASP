@@ -1,0 +1,91 @@
+@{
+    ViewData["Title"] = "Xác Nhận OTP";
+    Layout = "_Layout";
+}
+
+<div class="container">
+    <div class="row justify-content-center mt-5">
+        <div class="col-md-5">
+
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h4 class="mb-0">Xác Nhận Email</h4>
+                </div>
+
+                <div class="card-body">
+
+                    <p class="text-center text-muted mb-4">
+                        Nhập mã OTP 6 chữ số được gửi đến email của bạn
+                    </p>
+
+@if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger text-center">
+                            @TempData["Error"]
+                        </div>
+                    }
+
+
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success text-center">
+                            @TempData["Success"]
+                        </div>
+                    }
+
+                    <form asp-controller="Account" asp-action="VerifyOTP" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="mb-3">
+                            <label class="form-label">Mã OTP</label>
+
+                            <input type="text"
+                                   name="otp"
+                                   class="form-control form-control-lg text-center"
+                                   maxlength="6"
+                                   placeholder="000000"
+                                   required
+                                   inputmode="numeric"
+                                   pattern="[0-9]*"
+                                   style="letter-spacing:8px;font-size:22px;" />
+
+                            <div class="form-text text-center">
+                                Ví dụ: 123456
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                Xác Nhận
+                            </button>
+                        </div>
+
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="text-muted mb-2">Chưa nhận được mã?</p>
+
+                        <form asp-controller="Account" asp-action="ResendOTP" method="post">
+                            @Html.AntiForgeryToken()
+
+                            <button type="submit" class="btn btn-outline-secondary">
+                                Gửi lại mã OTP
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <a asp-controller="Account" asp-action="Register" class="text-muted">
+                            ← Quay lại đăng ký
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

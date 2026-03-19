@@ -1,0 +1,192 @@
+
+
+}
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-background">
+        <img src="~/images/hero-cake.jpg" alt="Sản phẩm Banner">
+    </div>
+
+    <div class="products-hero-overlay"></div>
+    <div class="container position-relative">
+        <div class="products-hero-content">
+            <h1 class="products-hero-title">Sản Phẩm</h1>
+            <p class="products-hero-subtitle">Khám phá bộ sưu tập bánh kem thủ công đặc biệt</p>
+            <div class="products-hero-breadcrumb">
+                <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                <span>/</span>
+                <span>Sản phẩm</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="products-section">
+    <div class="container">
+        <!-- Search & Filter Section -->
+        <div class="products-filter-card">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <form asp-action="Index" method="get" class="search-form">
+                            <input type="text" name="search" value="@ViewBag.Search" placeholder="Tìm kiếm bánh kem...">
+                            <button type="submit">Tìm kiếm</button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="category-filter">
+                        <form asp-action="Index" method="get">
+                            @if (!string.IsNullOrEmpty(ViewBag.Search))
+                            {
+                                <input type="hidden" name="search" value="@ViewBag.Search">
+                            }
+                            <select name="categoryId" asp-items="ViewBag.Categories" class="category-select" onchange="this.form.submit()">
+                                <option value="">Tất cả danh mục</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-2 text-end">
+                    @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                    {
+                        <a asp-action="Create" class="btn-add-product">
+                            <i class="fas fa-plus"></i>
+                            <span>Thêm mới</span>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+@if (Model.Count > 0)
+        {
+            <div class="products-grid">
+                @foreach (var product in Model)
+                {
+                    <div class="product-item">
+                        <div class="product-card-wrapper">
+                            <div class="product-card-modern">
+                                <div class="product-image-wrapper">
+                                    @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                    {
+                                        <img src="@product.ImageUrl" alt="@product.Name" class="product-img">
+                                    }
+                                    else
+                                    {
+                                        <div class="product-img-placeholder">
+                                            <i class="fas fa-birthday-cake"></i>
+                                        </div>
+                                    }
+                                    
+                                    <!-- Badges -->
+                                    <div class="product-badges">
+                                        @if (product.IsFeatured)
+                                        {
+                                            <span class="badge-hot">Hot</span>
+                                        }
+                                        @if (product.Stock <= 0)
+                                        {
+                                            <span class="badge-soldout">Hết hàng</span>
+                                        }
+                                        else if (product.Stock < 5)
+                                        {
+                                            <span class="badge-low">Chỉ còn @product.Stock</span>
+                                        }
+                                    </div>
+
+                                    <!-- Quick Actions -->
+                                    <div class="product-quick-actions">
+                                        <a asp-action="Details" asp-route-id="@product.Id" class="quick-action-btn" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                                        {
+                                            <a asp-action="Edit" asp-route-id="@product.Id" class="quick-action-btn" title="Sửa">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@product.Id" class="quick-action-btn" title="Xóa">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        }
+                                    </div>
+
+                                    <!-- Add to Cart Overlay -->
+                                    <div class="product-add-overlay">
+                                        @if (User.Identity?.IsAuthenticated == true && product.Stock > 0)
+                                        {
+                                            <form asp-controller="Cart" asp-action="Add" asp-route-productId="@product.Id" method="post">
+                                                <button type="submit" class="btn-add-cart">
+                                                    <i class="fas fa-shopping-cart"></i>
+                                                    <span>Thêm vào giỏ</span>
+                                                </button>
+                                            </form>
+                                        }
+                                        else if (User.Identity?.IsAuthenticated != true)
+                                        {
+                                            <a asp-controller="Account" asp-action="Login" class="btn-add-cart">
+                                                <i class="fas fa-sign-in-alt"></i>
+                                                <span>Đăng nhập để mua</span>
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn-add-cart disabled" disabled>
+                                                <i class="fas fa-times-circle"></i>
+                                                <span>Hết hàng</span>
+                                            </button>
+                                        }
+                                    </div>
+                                </div>
+
+                                <div class="product-info">
+                                    @if (product.Category != null)
+                                    {
+                                        <span class="product-category-tag">@product.Category.Name</span>
+                                    }
+                                    <h3 class="product-name">
+                                        <a asp-action="Details" asp-route-id="@product.Id">@product.Name</a>
+                                    </h3>
+                                    <p class="product-desc">@product.Description</p>
+                                    <div class="product-bottom">
+                                        <div class="product-price-box">
+                                            <span class="product-price">@String.Format("{0:N0}", product.Price)</span>
+                                            <span class="product-currency">VNĐ</span>
+                                        </div>
+                                        <div class="product-rating">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star-half-alt"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-cookie-bite"></i>
+                </div>
+                <h3 class="empty-state-title">Chưa có sản phẩm nào</h3>
+                <p class="empty-state-text">Hãy là người đầu tiên khám phá bộ sưu tập bánh kem tuyệt vời của chúng tôi!</p>
+                <a asp-controller="Home" asp-action="Index" class="btn-back-home">
+                    <i class="fas fa-home"></i>
+                    Về trang chủ
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+

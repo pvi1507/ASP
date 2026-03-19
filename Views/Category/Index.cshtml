@@ -1,0 +1,129 @@
+@model List<BC_ASP.Models.Category>
+@{
+    ViewData["Title"] = "Danh mục sản phẩm";
+}
+
+<!-- Admin Hero/Dashboard Header -->
+<div class="hero-section" style="height: 250px;">
+    <div class="hero-background">
+        <img src="~/images/hero-cake.jpg" alt="Danh mục Banner">
+    </div>
+
+    <div class="products-hero-overlay"></div>
+    <div class="container position-relative">
+        <div class="products-hero-content text-center text-white">
+            <h1 class="products-hero-title">Quản lý Danh mục</h1>
+
+        </div>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <!-- Add Button -->
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="section-title mb-0">Danh sách danh mục</h2>
+                <a asp-action="Create" class="btn btn-primary btn-lg">
+                    <i class="fas fa-plus me-2"></i>Thêm danh mục mới
+                </a>
+            </div>
+        }
+
+        <!-- Categories Grid/Table -->
+@if (Model != null && Model.Any())
+        {
+            <div class="row g-4">
+                @foreach (var category in Model)
+                {
+                    <div class="col-xl-4 col-lg-6">
+                        <div class="category-admin-card h-100 shadow-lg rounded-4 overflow-hidden border-0" style="background: var(--white); transition: var(--transition);">
+                            <div class="p-4 border-bottom" style="background: linear-gradient(135deg, var(--primary-light), #fff);">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h4 class="mb-1 fw-bold">@category.Name</h4>
+                                        <p class="text-muted mb-0 small">@category.Description</p>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge fs-6 px-3 py-2 @(category.IsActive ? "bg-success" : "bg-secondary")">
+                                            @(category.IsActive ? "Hoạt động" : "Không hoạt động")
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <div class="row text-center">
+                                    <div class="col-6">
+                                        <div class="stat-box">
+                                            <i class="fas fa-cube text-primary fs-2 mb-2"></i>
+                                            <div>@(category.Products?.Count ?? 0)</div>
+                                            <small class="text-muted">Sản phẩm</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="stat-box">
+                                            <i class="fas fa-eye @(category.IsActive ? "text-success" : "text-warning") fs-2 mb-2"></i>
+                                            <div>@(category.IsActive ? "Có" : "Ẩn")</div>
+                                            <small class="text-muted">Trạng thái</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 pt-0 border-top">
+                                <div class="d-flex gap-2">
+                                    <a asp-action="Details" asp-route-id="@category.Id" class="btn btn-outline-primary flex-fill">
+                                        <i class="fas fa-eye me-1"></i>Chi tiết
+                                    </a>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Edit" asp-route-id="@category.Id" class="btn btn-warning flex-fill">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@category.Id" class="btn btn-danger flex-fill" onclick="return confirm('Xóa danh mục này và tất cả sản phẩm?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-8">
+                <div class="empty-state-icon mb-4">
+                    <i class="fas fa-tags"></i>
+                </div>
+                <h3 class="empty-state-title">Chưa có danh mục nào</h3>
+                <p class="empty-state-text mb-4">Tạo danh mục đầu tiên để bắt đầu quản lý sản phẩm.</p>
+                @if (User.IsInRole("Admin"))
+                {
+                    <a asp-action="Create" class="btn btn-primary btn-lg">
+                        <i class="fas fa-plus me-2"></i>Tạo danh mục đầu tiên
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</section>
+
+<style>
+    .stat-box {
+        padding: 1rem;
+        background: var(--bg-light);
+        border-radius: 12px;
+        transition: var(--transition);
+    }
+    .stat-box:hover {
+        background: var(--primary-light);
+        transform: translateY(-2px);
+    }
+    .category-admin-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+    }
+</style>
+

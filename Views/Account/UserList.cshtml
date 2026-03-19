@@ -1,0 +1,41 @@
+@model List<BC_ASP.Controllers.UserListViewModel>
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+}
+
+<h1 class="section-title text-center">Quản lý người dùng</h1>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Họ tên</th>
+            <th>Email</th>
+            <th>Vai trò</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.FullName</td>
+                <td>@user.Email</td>
+                <td>
+                    @if (user.Roles != null && user.Roles.Any())
+                    {
+                        <span class="badge bg-primary">@string.Join(", ", user.Roles)</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">Chưa có vai trò</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="EditUserRoles" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-user-cog"></i> Phân quyền
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

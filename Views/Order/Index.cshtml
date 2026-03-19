@@ -1,0 +1,138 @@
+@model IEnumerable<BC_ASP.Models.Order>
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+}
+
+<!-- Admin Dashboard Hero -->
+<div class="hero-section" style="height: 280px;">
+    <div class="hero-background">
+        <img src="~/images/hero-cake.jpg" alt="Quản lý đơn hàng Banner">
+    </div>
+
+    <div class="products-hero-overlay"></div>
+    <div class="container position-relative">
+        <div class="products-hero-content text-white">
+            <h1 class="products-hero-title mb-2">Quản lý Đơn hàng</h1>
+            <p class="products-hero-subtitle h4">@Model.Count() đơn hàng</p>
+        </div>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <!-- Stats Row -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4 rounded-4 shadow-lg bg-white" style="background: linear-gradient(135deg, var(--primary-light), #fff);">
+                    <i class="fas fa-shopping-cart fs-1 text-primary mb-3"></i>
+                    <h3 class="fw-bold">@Model.Count()</h3>
+                    <p class="text-muted mb-0">Tổng đơn</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4 rounded-4 shadow-lg bg-white">
+                    <i class="fas fa-check-circle fs-1 text-success mb-3"></i>
+                    <h3 class="fw-bold">@Model.Count(o => o.Status == BC_ASP.Models.OrderStatus.Completed)</h3>
+                    <p class="text-muted mb-0">Hoàn thành</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4 rounded-4 shadow-lg bg-white">
+                    <i class="fas fa-shipping-fast fs-1 text-info mb-3"></i>
+                    <h3 class="fw-bold">@Model.Count(o => o.Status == BC_ASP.Models.OrderStatus.Shipping)</h3>
+                    <p class="text-muted mb-0">Đang giao</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="stat-card text-center p-4 rounded-4 shadow-lg bg-white">
+                    <i class="fas fa-clock fs-1 text-warning mb-3"></i>
+                    <h3 class="fw-bold">@Model.Count(o => o.Status == BC_ASP.Models.OrderStatus.Pending)</h3>
+                    <p class="text-muted mb-0">Chờ xử lý</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="card rounded-4 shadow-lg border-0 overflow-hidden">
+            <div class="card-header bg-white border-0 py-4">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h3 class="card-title mb-0 fw-bold text-secondary">Danh sách đơn hàng</h3>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Mã đơn</th>
+                                <th>Khách hàng</th>
+                                <th>Ngày đặt</th>
+                                <th>Tổng tiền</th>
+                                <th>Trạng thái</th>
+                                <th>Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.OrderByDescending(o => o.OrderDate))
+                            {
+                                <tr>
+                                    <td>
+                                        <span class="badge bg-primary fs-6 px-3 py-2">#@order.Id</span>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <strong>@order.CustomerName</strong>
+                                            <small class="d-block text-muted">@order.CustomerPhone</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="fw-semibold">@order.OrderDate.ToString("dd/MM HH:mm")</span>
+                                    </td>
+                                    <td>
+                                        <span class="h6 fw-bold text-primary">@String.Format("{0:N0}", order.TotalAmount) VNĐ</span>
+                                    </td>
+                                    <td>
+                                        @switch (order.Status)
+                                        {
+                                            case BC_ASP.Models.OrderStatus.Pending:
+                                                <span class="badge bg-warning text-dark fs-6 px-3 py-2">Chờ xác nhận</span>
+                                                break;
+                                            case BC_ASP.Models.OrderStatus.Confirmed:
+                                                <span class="badge bg-info fs-6 px-3 py-2">Đã xác nhận</span>
+                                                break;
+                                            case BC_ASP.Models.OrderStatus.Shipping:
+                                                <span class="badge bg-primary fs-6 px-3 py-2">Đang giao</span>
+                                                break;
+                                            case BC_ASP.Models.OrderStatus.Completed:
+                                                <span class="badge bg-success fs-6 px-3 py-2">Hoàn thành</span>
+                                                break;
+                                            case BC_ASP.Models.OrderStatus.Cancelled:
+                                                <span class="badge bg-danger fs-6 px-3 py-2">Đã hủy</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary" title="Chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                                            {
+                                                <a asp-action="Edit" asp-route-id="@order.Id" class="btn btn-sm btn-outline-warning" title="Cập nhật">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

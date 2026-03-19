@@ -1,0 +1,220 @@
+@{
+    ViewData["Title"] = "BC ASP Bakery - Bánh Kem Hiện Đại";
+}
+
+<!-- Hero Section - Fullscreen with Image -->
+<section class="hero-section">
+    <div class="hero-background">
+        <img src="~/images/hero-cake.jpg" alt="Birthday Cake">
+    </div>
+    <div class="hero-overlay"></div>
+    <div class="container-fluid px-0">
+        <div class="row g-0">
+            <div class="col-lg-6">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Nơi Hội Tụ <span>Đam Mê</span> & <span>Nghệ Thuật</span>
+                    </h1>
+                    <p class="hero-subtitle">
+                        Khám phá bộ sưu tập bánh kem thủ công được chế biến từ nguyên liệu tươi ngon nhất, 
+                        mang đến những khoảnh khắc ngọt ngào cho ngày đặc biệt của bạn.
+                    </p>
+                    <div class="hero-buttons">
+                        <a asp-controller="Product" asp-action="Index" class="btn btn-primary">
+                            <i class="fas fa-birthday-cake me-2"></i>Khám phá ngay
+                        </a>
+                        <a asp-controller="Contact" asp-action="Index" class="btn btn-outline-light">
+                            <i class="fas fa-phone me-2"></i>Liên hệ
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+@if (ViewBag.Categories != null && ViewBag.Categories.Count > 0)
+{
+    <section class="category-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Danh Mục Bánh</h2>
+                <p class="section-subtitle">Lựa chọn loại bánh phù hợp với sở thích của bạn</p>
+            </div>
+            <div class="row g-4 justify-content-center">
+                @foreach (var category in ViewBag.Categories)
+                {
+                    <div class="col-6 col-md-4 col-lg-2">
+                        <a asp-controller="Product" asp-action="Index" asp-route-categoryId="@category.Id" class="text-decoration-none">
+                            <div class="category-card">
+                                <div class="category-icon">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
+                                <h5 class="category-name">@category.Name</h5>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Featured Products Section -->
+@if (ViewBag.FeaturedProducts != null && ViewBag.FeaturedProducts.Count > 0)
+{
+    <section class="section-padding">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+                <p class="section-subtitle">Những chiếc bánh được yêu thích nhất</p>
+            </div>
+            <div class="row g-4">
+                @foreach (var product in ViewBag.FeaturedProducts)
+                {
+                    <div class="col-md-6 col-lg-3">
+                        <div class="product-card">
+                            <div class="product-image">
+                                @if (!string.IsNullOrEmpty(product.ImageUrl))
+                                {
+                                    <img src="@product.ImageUrl" alt="@product.Name">
+                                }
+                                else
+                                {
+                                    <div class="product-placeholder">
+                                        <i class="fas fa-birthday-cake"></i>
+                                    </div>
+                                }
+                                @if (product.IsFeatured)
+                                {
+                                    <span class="product-badge">Hot</span>
+                                }
+                                <div class="product-actions">
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="product-action-btn" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                @if (product.Category != null)
+                                {
+                                    <span class="product-category">@product.Category.Name</span>
+                                }
+                                <h5 class="product-title">@product.Name</h5>
+                                <p class="product-description">@product.Description</p>
+                                <div class="product-footer">
+                                    <span class="product-price">@String.Format("{0:N0} VNĐ", product.Price)</span>
+                                    @if (User.Identity.IsAuthenticated)
+                                    {
+                                        <form asp-controller="Cart" asp-action="Add" asp-route-productId="@product.Id" method="post">
+                                            <button type="submit" class="add-to-cart-btn">
+                                                <i class="fas fa-cart-plus me-1"></i>Thêm
+                                            </button>
+                                        </form>
+                                    }
+                                    else
+                                    {
+                                        <a asp-controller="Account" asp-action="Login" class="add-to-cart-btn" title="Đăng nhập để mua">
+                                            <i class="fas fa-cart-plus me-1"></i>Thêm
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <div class="text-center mt-5">
+                <a asp-controller="Product" asp-action="Index" class="btn btn-outline-primary btn-lg">
+                    Xem tất cả sản phẩm <i class="fas fa-arrow-right ms-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Features Section -->
+<section class="features-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-shipping-fast"></i>
+                    </div>
+                    <h4 class="feature-title">Giao Hàng Nhanh Chóng</h4>
+                    <p class="feature-text">Giao hàng tận nơi trong thành phố, đảm bảo bánh luôn tươi ngon</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h4 class="feature-title">Chất Lượng Đảm Bảo</h4>
+                    <p class="feature-text">100% nguyên liệu tự nhiên, an toàn vệ sinh thực phẩm</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-box">
+                    <div class="feature-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <h4 class="feature-title">Tận Tâm Phục Vụ</h4>
+                    <p class="feature-text">Đội ngũ chuyên nghiệp, luôn lắng nghe và hỗ trợ khách hàng</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="section-padding" style="background: var(--white);">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Tại Sao Chọn Chúng Tôi</h2>
+            <p class="section-subtitle">Cam kết mang đến trải nghiệm tốt nhất cho khách hàng</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-star" style="font-size: 40px; color: var(--primary-color);"></i>
+                    </div>
+                    <h5>Đánh Giá Cao</h5>
+                    <p class="text-muted">Hàng nghìn khách hàng hài lòng</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-paint-brush" style="font-size: 40px; color: var(--primary-color);"></i>
+                    </div>
+                    <h5>Thiết Kế Độc Đáo</h5>
+                    <p class="text-muted">Mỗi chiếc bánh là một tác phẩm nghệ thuật</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-leaf" style="font-size: 40px; color: var(--primary-color);"></i>
+                    </div>
+                    <h5>Nguyên Liệu Xanh</h5>
+                    <p class="text-muted">Tươi ngon, an toàn cho sức khỏe</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center p-4">
+                    <div class="mb-3">
+                        <i class="fas fa-clock" style="font-size: 40px; color: var(--primary-color);"></i>
+                    </div>
+                    <h5>Phục Vụ 24/7</h5>
+                    <p class="text-muted">Luôn sẵn sàng phục vụ mọi lúc</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+

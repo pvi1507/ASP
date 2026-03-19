@@ -1,0 +1,197 @@
+@model BC_ASP.Models.Order
+@{
+    ViewData["Title"] = "Chi tiết đơn hàng #" + Model.Id;
+}
+
+@{
+    var statusBadgeClass = Model.Status switch
+    {
+        BC_ASP.Models.OrderStatus.Pending => "bg-warning text-dark",
+        BC_ASP.Models.OrderStatus.Confirmed => "bg-info", 
+        BC_ASP.Models.OrderStatus.Shipping => "bg-primary",
+        BC_ASP.Models.OrderStatus.Completed => "bg-success",
+        _ => "bg-danger"
+    };
+    var statusText = Model.Status switch
+    {
+        BC_ASP.Models.OrderStatus.Pending => "⏳ Chờ xác nhận",
+        BC_ASP.Models.OrderStatus.Confirmed => "✅ Đã xác nhận",
+        BC_ASP.Models.OrderStatus.Shipping => "🚚 Đang giao",
+        BC_ASP.Models.OrderStatus.Completed => "🎉 Hoàn thành",
+        _ => "❌ Đã hủy"
+    };
+}
+
+<!-- Order Details Hero -->
+<div class="hero-section" style="height: 250px;">
+    <div class="hero-background">
+        <img src="~/images/hero-cake.jpg" alt="Chi tiết đơn hàng Banner">
+    </div>
+
+    <div class="products-hero-overlay"></div>
+    <div class="container">
+        <div class="products-hero-content">
+            <h1 class="products-hero-title text-white mb-2">Đơn hàng #@Model.Id</h1>
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <span class="badge @statusBadgeClass fs-5 px-4 py-3">@statusText</span>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <h3 class="text-white mb-0">@String.Format("{0:N0} VNĐ", Model.TotalAmount)</h3>
+                    <small class="text-white-50">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Customer Info -->
+            <div class="col-lg-4">
+                <div class="card h-100 rounded-4 shadow-lg border-0">
+                    <div class="card-header bg-light rounded-top-4 py-4">
+                        <h5 class="card-title mb-0 fw-bold">
+                            <i class="fas fa-user me-2 text-primary"></i>Thông tin khách hàng
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="info-item mb-3">
+                            <label class="fw-semibold text-muted">Họ tên:</label>
+                            <p class="mb-0">@Model.CustomerName</p>
+                        </div>
+                        <div class="info-item mb-3">
+                            <label class="fw-semibold text-muted">Email:</label>
+                            <p class="mb-0">@Model.CustomerEmail</p>
+                        </div>
+                        <div class="info-item mb-3">
+                            <label class="fw-semibold text-muted">Điện thoại:</label>
+                            <p class="mb-0">@Model.CustomerPhone</p>
+                        </div>
+                        <div class="info-item mb-3">
+                            <label class="fw-semibold text-muted">Địa chỉ:</label>
+                            <p class="mb-0 fw-semibold">@Model.ShippingAddress</p>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Note))
+                        {
+                            <div class="info-item">
+                                <label class="fw-semibold text-muted">Ghi chú:</label>
+                                <div class="alert alert-info p-3 mt-2">
+                                    <i class="fas fa-sticky-note me-2"></i>@Model.Note
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Info & Status -->
+            <div class="col-lg-8">
+                <div class="row g-4">
+                    <!-- Order Summary -->
+                    <div class="col-md-6">
+                        <div class="card h-100 rounded-4 shadow-lg border-0">
+                            <div class="card-header bg-light rounded-top-4 py-4">
+                                <h5 class="card-title mb-0 fw-bold">
+                                    <i class="fas fa-receipt me-2 text-success"></i>Thông tin đơn hàng
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="info-item mb-3">
+                                    <label class="fw-semibold text-muted">Mã đơn hàng:</label>
+                                    <p class="h6 mb-0">#@Model.Id</p>
+                                </div>
+                                <div class="info-item mb-3">
+                                    <label class="fw-semibold text-muted">Ngày đặt hàng:</label>
+                                    <p class="h6 mb-0">@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")</p>
+                                </div>
+                                <div class="info-item">
+                                    <label class="fw-semibold text-muted">Trạng thái:</label>
+                                    <span class="badge @statusBadgeClass fs-6 px-4 py-2">@statusText</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Summary -->
+                    <div class="col-md-6">
+                        <div class="card h-100 rounded-4 shadow-lg border-0" style="background: linear-gradient(135deg, var(--primary-light), #fff);">
+                            <div class="card-body text-center py-5">
+                                <i class="fas fa-wallet fs-1 text-primary mb-4"></i>
+                                <h2 class="fw-bold text-primary mb-2">@String.Format("{0:N0}", Model.TotalAmount) VNĐ</h2>
+                                <p class="lead text-muted mb-4">Tổng giá trị đơn hàng</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Table -->
+                <div class="card mt-4 rounded-4 shadow-lg border-0 overflow-hidden">
+                    <div class="card-header bg-light py-4">
+                        <h5 class="card-title mb-0 fw-bold">
+                            <i class="fas fa-boxes me-2 text-info"></i>Chi tiết sản phẩm (@Model.OrderDetails.Count sản phẩm)
+                        </h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Sản phẩm</th>
+                                        <th>Giá</th>
+                                        <th>Số lượng</th>
+                                        <th>Thành tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var detail in Model.OrderDetails)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    @if (!string.IsNullOrEmpty(detail.Product?.ImageUrl))
+                                                    {
+                                                        <img src="@detail.Product.ImageUrl" alt="@detail.Product.Name" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;">
+                                                    }
+                                                    <div>
+                                                        <strong>@detail.Product?.Name</strong>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td>@String.Format("{0:N0} VNĐ", detail.UnitPrice)</td>
+                                            <td>
+                                                <span class="badge bg-light text-dark px-3 py-2">@detail.Quantity</span>
+                                            </td>
+                                            <td><strong>@String.Format("{0:N0} VNĐ", detail.Subtotal)</strong></td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tfoot class="table-light">
+                                    <tr>
+                                        <td colspan="3" class="text-end fw-bold h5 text-primary">Tổng cộng:</td>
+                                        <td class="fw-bold h5 text-primary">@String.Format("{0:N0} VNĐ", Model.TotalAmount)</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="text-center mt-5">
+            <a asp-action="Index" class="btn btn-secondary btn-lg px-5 me-3">
+                <i class="fas fa-arrow-left me-2"></i>Quay lại danh sách
+            </a>
+            @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary btn-lg px-5">
+                    <i class="fas fa-edit me-2"></i>Cập nhật trạng thái
+                </a>
+            }
+        </div>
+    </div>
+</section>
+

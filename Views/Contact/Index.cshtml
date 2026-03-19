@@ -1,0 +1,186 @@
+@{
+    ViewData["Title"] = "Liên hệ";
+}
+
+<!-- Hero Section -->
+<div class="hero-section">
+    <div class="hero-background">
+        <img src="~/images/hero-cake.jpg" alt="Liên hệ Banner">
+    </div>
+
+    <div class="contact-hero-overlay"></div>
+    <div class="container position-relative">
+        <div class="contact-hero-content">
+            <h1 class="contact-hero-title">Liên Hệ Với Chúng Tôi</h1>
+            <p class="contact-hero-subtitle">Chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7</p>
+            <div class="contact-hero-breadcrumb">
+                <a asp-controller="Home" asp-action="Index">Trang chủ</a>
+                <span>/</span>
+                <span>Liên hệ</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="contact-section">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <!-- Contact Info -->
+            <div class="col-lg-5">
+                <div class="contact-info-card h-100 p-5 rounded-4 shadow-lg" style="background: var(--white);">
+                    <h2 class="contact-info-title mb-4">Thông Tin Liên Hệ</h2>
+                    <p class="contact-info-text mb-5 lead">Liên hệ ngay hôm nay để được tư vấn miễn phí và đặt hàng nhanh chóng!</p>
+                    
+                    <div class="contact-info-list">
+                        <div class="contact-info-item mb-4">
+                            <div class="contact-info-icon">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <h5 class="fw-bold mb-1">Địa chỉ cửa hàng</h5>
+                                <p>419 Đường 30/4, Ninh Kiều, Cần Thơ</p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-info-item mb-4">
+                            <div class="contact-info-icon">
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <h4 class="fw-bold mb-1">Hotline</h4>
+                                <a href="tel:+84356034510" class="text-decoration-none">0356 034 510</a>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-info-item mb-4">
+                            <div class="contact-info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <h5 class="fw-bold mb-1">Email</h5>
+                                <a href="mailto:vix5533@gmail.com" class="text-decoration-none">vix5533@gmail.com</a>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-info-item">
+                            <div class="contact-info-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="contact-info-content">
+                                <h5 class="fw-bold mb-1">Giờ làm việc</h5>
+                                <p>8:00 - 20:00 (T2 - CN)</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-social mt-5">
+                        <h5 class="fw-bold mb-4">Theo dõi chúng tôi</h5>
+                        <div class="contact-social-links">
+                            <a href="#" class="social-btn" title="Facebook">
+                                <i class="fab fa-facebook-f fs-3"></i>
+                            </a>
+                            <a href="#" class="social-btn" title="Instagram">
+                                <i class="fab fa-instagram fs-3"></i>
+                            </a>
+                            <a href="#" class="social-btn" title="YouTube">
+                                <i class="fab fa-youtube fs-3"></i>
+                            </a>
+                            <a href="#" class="social-btn" title="TikTok">
+                                <i class="fab fa-tiktok fs-3"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contact Form -->
+            <div class="col-lg-7">
+                <div class="contact-form-card p-5 rounded-4 shadow-lg h-100" style="background: var(--white);">
+                    <div class="text-center mb-5">
+                        <h2 class="contact-form-title mb-3">Gửi Tin Nhắn Cho Chúng Tôi</h2>
+                        <p class="contact-form-subtitle lead text-muted">Chúng tôi sẽ phản hồi trong vòng 24h</p>
+                    </div>
+                    
+                    <form asp-controller="Contact" asp-action="SendContact" method="post">
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
+                                <input type="text" name="name" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                                <input type="email" name="email" class="form-control" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Số điện thoại</label>
+                                <input type="tel" name="phone" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Chủ đề <span class="text-danger">*</span></label>
+                                <select name="subject" class="form-select" required>
+                                    <option value="">Chọn chủ đề</option>
+                                    <option value="tuvan">Tư vấn sản phẩm</option>
+                                    <option value="dathang">Đặt hàng</option>
+                                    <option value="hotro">Hỗ trợ kỹ thuật</option>
+                                    <option value="khac">Khác</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-semibold">Tin nhắn <span class="text-danger">*</span></label>
+                                <textarea name="message" class="form-control" rows="6" required placeholder="Viết chi tiết vấn đề bạn cần hỗ trợ..."></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    <i class="fas fa-paper-plane me-2"></i>
+                                    Gửi tin nhắn
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Map Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="map-card rounded-4 overflow-hidden shadow-lg">
+                    <div class="p-5 bg-primary text-white text-center">
+                        <h3 class="mb-0">Tìm Chúng Tôi Trên Bản Đồ</h3>
+                    </div>
+                    <div class="map-container">
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.333050789176!2d105.78112507608374!3d10.032124260121!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31a0882f2a7e3d9d%3A0xbecfb35c6b9d49a6!2s419%20%C4%90.%2030%20Th%C3%A1ng%204%2C%20Ninh%20Ki%E2%90%92u%20-%20C%E2%90%92n%20Th%C3%A9!5e0!3m2!1svi!2svn!4v1725896635921!5m2!1svi!2svn" 
+                                width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+                        </iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .social-btn {
+        width: 56px;
+        height: 56px;
+        background: var(--bg-light);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--secondary-color);
+        transition: var(--transition);
+        margin-right: 12px;
+    }
+    .social-btn:hover {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+        color: white;
+        transform: translateY(-3px);
+    }
+    .contact-info-item:hover .contact-info-icon {
+        background: var(--primary-color) !important;
+        transform: scale(1.05);
+    }
+</style>
+

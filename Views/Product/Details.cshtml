@@ -1,0 +1,181 @@
+@model BC_ASP.Models.Product
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<!-- Product Hero Header -->
+<div class="hero-section" style="height: 300px;">
+    <div class="hero-background">
+        <img src="~/images/hero-cake.jpg" alt="Sản phẩm chi tiết">
+    </div>
+
+    <div class="products-hero-overlay" style="background: rgba(0,0,0,0.3);"></div>
+    <div class="container position-relative">
+        <div class="products-hero-content text-center text-white">
+            <div class="products-hero-breadcrumb">
+                <a asp-controller="Home" asp-action="Index" class="text-light">Trang chủ</a>
+                <span class="mx-2">/</span>
+                <a asp-controller="Product" asp-action="Index" class="text-light">Sản phẩm</a>
+                <span class="mx-2">/</span>
+                <span>@Model.Name</span>
+            </div>
+            <h1 class="products-hero-title mt-2">@Model.Name</h1>
+            @if (Model.Category != null)
+            {
+                <span class="badge bg-primary fs-6 px-3 py-2">@Model.Category.Name</span>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Product Details Section -->
+<section class="py-5" style="background: var(--bg-cream);">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Product Gallery & Badges -->
+            <div class="col-lg-6">
+                <div class="product-gallery position-relative">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded-4 shadow-lg w-100" style="height: 500px; object-fit: cover;">
+                    }
+                    else
+                    {
+                        <div class="bg-light rounded-4 d-flex align-items-center justify-content-center" style="height: 500px;">
+                            <i class="fas fa-birthday-cake text-primary" style="font-size: 150px; opacity: 0.5;"></i>
+                        </div>
+                    }
+
+                    <!-- Badges -->
+                    <div class="position-absolute top-20 start-0">
+                        @if (Model.IsFeatured)
+                        {
+                            <span class="badge-hot fs-6 px-3 py-2 me-2 mb-2 d-block">🔥 Hot</span>
+                        }
+                        @if (Model.Stock <= 0)
+                        {
+                            <span class="badge-soldout fs-6 px-3 py-2">❌ Hết hàng</span>
+                        }
+                        else if (Model.Stock < 5)
+                        {
+                            <span class="badge-low fs-6 px-3 py-2">⚠️ Chỉ còn @Model.Stock</span>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Info & Buy Box -->
+            <div class="col-lg-6">
+                <div class="product-info-card p-5 rounded-4 shadow-lg" style="background: var(--white); height: fit-content;">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="product-rating me-3">
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star text-warning"></i>
+                            <i class="fas fa-star-half-alt text-warning"></i>
+                            <span class="ms-2 fw-bold text-dark">4.8 (127 đánh giá)</span>
+                        </div>
+                    </div>
+
+                    <h1 class="product-title mb-3">@Model.Name</h1>
+                    <div class="product-price-box mb-4">
+                        <span class="h2 text-primary fw-bold">@String.Format("{0:N0}", Model.Price) <small class="fs-5 text-muted">VNĐ</small></span>
+                    </div>
+
+                    <div class="product-meta mb-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <i class="fas fa-layer-group text-primary me-3"></i>
+                            <span class="fw-semibold">Danh mục:</span> @Model.Category?.Name
+                        </div>
+                        <div class="d-flex align-items-center mb-4">
+                            <i class="fas fa-box text-primary me-3"></i>
+                            <span class="fw-semibold">Tồn kho:</span>
+                            @if (Model.Stock > 0)
+                            {
+                                <span class="badge bg-success ms-2">@Model.Stock sản phẩm</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger ms-2">Hết hàng</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="product-description mb-4">
+                        <h5 class="fw-bold mb-3"><i class="fas fa-align-left me-2"></i>Mô tả sản phẩm</h5>
+                        <p class="lead">@Model.Description</p>
+                    </div>
+
+                    @if (User.Identity.IsAuthenticated && Model.Stock > 0)
+                    {
+                        <div class="buy-box p-4 rounded-3 mb-4" style="background: linear-gradient(135deg, var(--primary-light), #fff);">
+                            <h5 class="mb-3 fw-bold">Thêm vào giỏ hàng</h5>
+                            <form asp-controller="Cart" asp-action="Add" asp-route-productId="@Model.Id" method="post" class="row g-3 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label fw-semibold">Số lượng</label>
+                                    <input type="number" name="quantity" value="1" min="1" max="@Model.Stock" class="form-control" style="border-radius: 12px;">
+                                </div>
+                                <div class="col-md-8">
+                                    <button type="submit" class="btn w-100 btn-lg" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); border: none; border-radius: 25px; color: white; font-weight: 600;">
+                                        <i class="fas fa-shopping-cart me-2"></i>
+                                        Thêm vào giỏ hàng
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    }
+                    else if (!User.Identity.IsAuthenticated)
+                    {
+                        <div class="buy-box p-4 rounded-3 mb-4 text-center" style="background: linear-gradient(135deg, var(--primary-light), #fff);">
+                            <h5 class="mb-4">Đăng nhập để mua hàng</h5>
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg px-5">
+                                <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập ngay
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="buy-box p-4 rounded-3 text-center" style="background: linear-gradient(135deg, #f8d7da, #fff); border: 2px dashed #dc3545;">
+                            <i class="fas fa-exclamation-triangle text-danger mb-3" style="font-size: 48px;"></i>
+                            <h5 class="text-danger">Sản phẩm đã hết hàng</h5>
+                            <p class="mb-4">Chúng tôi sẽ cập nhật sớm!</p>
+                            <a asp-action="Index" class="btn btn-outline-primary">Xem sản phẩm khác</a>
+                        </div>
+                    }
+
+                    <div class="product-actions mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary me-2">
+                            <i class="fas fa-arrow-left me-1"></i> Quay lại danh sách
+                        </a>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Employee"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">
+                                <i class="fas fa-edit me-1"></i>Sửa
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger" onclick="return confirm('Xóa sản phẩm này?')">
+                                <i class="fas fa-trash me-1"></i>Xóa
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Reviews Section (Placeholder) -->
+<section class="py-5 bg-white">
+    <div class="container">
+        <h2 class="section-title text-center mb-5">Đánh giá & Nhận xét</h2>
+        <div class="row">
+            <div class="col-12">
+                <div class="alert alert-info">
+                    <i class="fas fa-star me-2"></i>
+                    Chức năng đánh giá đang được phát triển. Cảm ơn bạn!
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

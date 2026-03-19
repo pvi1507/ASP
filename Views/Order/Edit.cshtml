@@ -1,0 +1,70 @@
+@model BC_ASP.Models.Order
+@{
+    ViewData["Title"] = "Cập nhật trạng thái đơn hàng #" + Model.Id;
+}
+
+<!-- Edit Hero -->
+<div class="hero-section" style="height: 250px;">
+    <div class="hero-background">
+        <img src="~/images/hero-cake.jpg" alt="Cập nhật đơn hàng Banner">
+    </div>
+
+    <div class="products-hero-overlay"></div>
+    <div class="container">
+        <div class="products-hero-content">
+            <h1 class="products-hero-title text-dark mb-2">Cập nhật đơn hàng #@Model.Id</h1>
+            <p class="products-hero-subtitle">Thay đổi trạng thái đơn hàng</p>
+        </div>
+    </div>
+</div>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card rounded-4 shadow-lg border-0 overflow-hidden">
+                    <div class="card-header bg-warning text-dark py-4">
+                        <h4 class="card-title mb-0 fw-bold">
+                            <i class="fas fa-edit me-2"></i>Cập nhật thông tin
+                        </h4>
+                    </div>
+                    <div class="card-body p-5">
+                        <form asp-action="Edit" method="post">
+                            <input type="hidden" asp-for="Id">
+                            <input type="hidden" asp-for="UserId">
+                            <input type="hidden" asp-for="OrderDate">
+                            <input type="hidden" asp-for="CustomerName">
+                            <input type="hidden" asp-for="CustomerEmail">
+                            <input type="hidden" asp-for="CustomerPhone">
+                            <input type="hidden" asp-for="ShippingAddress">
+                            <input type="hidden" asp-for="Note">
+                            <input type="hidden" asp-for="TotalAmount">
+
+                            <div class="mb-5">
+                                <label class="form-label h5 fw-bold mb-4">Trạng thái hiện tại: <span class="badge @(Model.Status switch { BC_ASP.Models.OrderStatus.Pending => "bg-warning", _ => "bg-secondary" }) fs-5">@Model.Status</span></label>
+                                <div class="status-select-group">
+                                    <label class="form-label h6 fw-semibold mb-3">Chọn trạng thái mới <span class="text-danger">*</span></label>
+                                    <select asp-for="Status" class="form-select form-select-lg" required>
+                                        <option value="@BC_ASP.Models.OrderStatus.Pending" selected="@(Model.Status == BC_ASP.Models.OrderStatus.Pending)">⏳ Chờ xác nhận</option>
+                                        <option value="@BC_ASP.Models.OrderStatus.Confirmed" selected="@(Model.Status == BC_ASP.Models.OrderStatus.Confirmed)">✅ Đã xác nhận</option>
+                                        <option value="@BC_ASP.Models.OrderStatus.Shipping" selected="@(Model.Status == BC_ASP.Models.OrderStatus.Shipping)">🚚 Đang giao hàng</option>
+                                        <option value="@BC_ASP.Models.OrderStatus.Completed" selected="@(Model.Status == BC_ASP.Models.OrderStatus.Completed)">🎉 Hoàn thành</option>
+                                        <option value="@BC_ASP.Models.OrderStatus.Cancelled" selected="@(Model.Status == BC_ASP.Models.OrderStatus.Cancelled)">❌ Đã hủy</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-3 d-md-flex justify-content-md-end">
+                                <button type="submit" class="btn btn-success btn-lg px-5">
+                                    <i class="fas fa-save me-2"></i>Lưu thay đổi
+                                </button>
+                                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-secondary px-5">Hủy</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

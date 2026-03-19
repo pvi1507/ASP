@@ -1,0 +1,39 @@
+@model BC_ASP.Models.ApplicationUser
+@{
+    ViewData["Title"] = "Phân quyền người dùng";
+}
+
+<h1>Phân quyền người dùng</h1>
+
+<div class="card">
+    <div class="card-body">
+        <h5>Người dùng: @Model.FullName</h5>
+        <p>Email: @Model.Email</p>
+        
+        <form asp-action="EditUserRoles" method="post">
+            <input type="hidden" asp-for="Id">
+            
+            <div class="mb-3">
+                <label class="form-label">Vai trò</label>
+                <div class="checkbox-list">
+                    @foreach (var role in ViewBag.AllRoles as IEnumerable<string>)
+                    {
+                        <div class="form-check">
+                            @{
+                                var isInRole = ViewBag.UserRoles as IList<string>;
+                                var isChecked = isInRole != null && isInRole.Contains(role);
+                            }
+                            <input type="checkbox" name="SelectedRoles" value="@role" 
+                                   class="form-check-input" @(isChecked ? "checked" : "")>
+                            <label class="form-check-label">@role</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Lưu</button>
+            <a asp-action="UserList" class="btn btn-secondary">Quay lại</a>
+        </form>
+    </div>
+</div>
+
