@@ -1,0 +1,399 @@
+
+@{
+    ViewData["Title"] = "Admin Dashboard - Geewonii Bakery";
+    var stats = ViewBag.Stats as dynamic;
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Header with Welcome & Quick Stats -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h2 mb-1">
+                        <i class="fas fa-tachometer-alt text-primary me-3"></i>
+                        <span>Bảng điều khiển Admin</span>
+                    </h1>
+                    <p class="text-muted mb-0">Chào mừng quay lại! Đây là tổng quan hệ thống của bạn.</p>
+                </div>
+                <div class="d-none d-md-flex gap-2">
+                    <a href="#" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-sync-alt"></i> Làm mới
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-primary btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-cog"></i> Hành động nhanh
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-controller="Product" asp-action="Create"><i class="fas fa-plus me-2"></i> Thêm sản phẩm</a></li>
+                            <li><a class="dropdown-item" asp-controller="Category" asp-action="Create"><i class="fas fa-layer-group me-2"></i> Thêm danh mục</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-success" asp-controller="Order" asp-action="Index"><i class="fas fa-shopping-bag me-2"></i> Xem đơn hàng mới</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <!-- Stats Overview -->
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <div class="stat-icon bg-primary">
+                                <i class="fas fa-cake-slice"></i>
+                            </div>
+                        </div>
+                        <div class="col-9 text-end">
+                            <h3 class="stat-number text-primary mb-1">@stats.TotalProducts</h3>
+                            <p class="stat-label mb-0 text-muted">Tổng sản phẩm</p>
+                            <small class="stat-change text-success">
+                                <i class="fas fa-arrow-up"></i> +12% tháng này
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <div class="stat-icon bg-success">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                        </div>
+                        <div class="col-9 text-end">
+                            <h3 class="stat-number text-success mb-1">@stats.TotalCategories</h3>
+                            <p class="stat-label mb-0 text-muted">Tổng danh mục</p>
+                            <small class="stat-change text-success">
+                                <i class="fas fa-arrow-up"></i> +3 danh mục
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <div class="stat-icon bg-info">
+                                <i class="fas fa-shopping-bag"></i>
+                            </div>
+                        </div>
+                        <div class="col-9 text-end">
+                            <h3 class="stat-number text-info mb-1">@stats.TotalOrders</h3>
+                            <p class="stat-label mb-0 text-muted">Tổng đơn hàng</p>
+                            <small class="stat-change text-warning">
+                                <i class="fas fa-clock"></i> 12 đơn mới hôm nay
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-3 col-lg-6 col-md-6 col-sm-12">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-3">
+                            <div class="stat-icon bg-warning">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                        <div class="col-9 text-end">
+                            <h3 class="stat-number text-warning mb-1">247</h3>
+                            <p class="stat-label mb-0 text-muted">Tổng khách hàng</p>
+                            <small class="stat-change text-success">
+                                <i class="fas fa-arrow-up"></i> +28 hôm nay
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Chart Section -->
+        <div class="col-xl-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pb-0">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-chart-line text-info me-2"></i>
+                        Doanh thu theo tháng
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <canvas id="revenueChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="col-xl-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0 pb-0">
+                    <h5 class="card-title mb-2">
+                        <i class="fas fa-bolt text-warning me-2"></i>
+                        Hành động nhanh
+                    </h5>
+                </div>
+                <div class="card-body pt-2">
+                    <div class="list-group list-group-flush">
+                        <a asp-controller="Product" asp-action="Create" class="list-group-item list-group-item-action border-0 px-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="action-icon bg-primary">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">Thêm sản phẩm mới</h6>
+                                    <small class="text-muted">Tạo bánh kem mới ngay</small>
+                                </div>
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
+                        </a>
+                        <a asp-controller="Order" asp-action="Index" class="list-group-item list-group-item-action border-0 px-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="action-icon bg-info">
+                                    <i class="fas fa-shopping-bag"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">Quản lý đơn hàng</h6>
+                                    <small class="text-muted">@(stats.RecentOrders?.Count ?? 0) đơn chờ xử lý</small>
+                                </div>
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
+                        </a>
+                        <a asp-controller="Category" asp-action="Index" class="list-group-item list-group-item-action border-0 px-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="action-icon bg-success">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">Quản lý danh mục</h6>
+                                    <small class="text-muted">@stats.TotalCategories danh mục</small>
+                                </div>
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
+                        </a>
+                        <a asp-controller="Account" asp-action="UserList" class="list-group-item list-group-item-action border-0 px-0 py-3">
+                            <div class="d-flex align-items-center">
+                                <div class="action-icon bg-warning">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h6 class="mb-1">Quản lý người dùng</h6>
+                                    <small class="text-muted">Xem & chỉnh sửa users</small>
+                                </div>
+                                <i class="fas fa-chevron-right text-muted"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white border-0 pb-0">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-clock text-warning me-2"></i>
+                        Đơn hàng gần đây
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mã đơn</th>
+                                    <th>Khách hàng</th>
+                                    <th>Tổng tiền</th>
+                                    <th>Trạng thái</th>
+                                    <th>Ngày</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+@if (stats.RecentOrders != null && ((System.Collections.IEnumerable)stats.RecentOrders).Cast<object>().Any())
+                                {
+                                    @foreach (var order in stats.RecentOrders)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <span class="badge bg-primary rounded-pill px-3 py-2">#@order.Id</span>
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <div class="fw-bold">@(order.User?.FullName ?? "Khách")</div>
+                                                    <small class="text-muted">@(order.User?.Email ?? "")</small>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="fw-bold text-success h6 mb-0">@order.TotalAmount.ToString("N0")đ</span>
+                                            </td>
+                                            <td>
+                                                @{
+                                                    var status = (int?)order.Status ?? 0;
+                                                }
+                                                @if (status == 0)
+                                                {
+                                                    <span class="badge bg-warning text-dark">Chờ xác nhận</span>
+                                                }
+                                                else if (status == 1)
+                                                {
+                                                    <span class="badge bg-info">Đã xác nhận</span>
+                                                }
+                                                else if (status == 2)
+                                                {
+                                                    <span class="badge bg-primary">Đang giao</span>
+                                                }
+                                                else if (status == 3)
+                                                {
+                                                    <span class="badge bg-success">Hoàn thành</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Hủy</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="text-muted small">@order.OrderDate.ToString("dd/MM HH:mm")</span>
+                                            </td>
+                                            <td>
+                                                <a asp-controller="Order" asp-action="Details" asp-route-id="@order.Id" class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center py-5">
+                                            <div class="empty-state-mini">
+                                                <i class="fas fa-inbox fa-2x text-muted mb-3"></i>
+                                                <h6 class="text-muted mb-1">Chưa có đơn hàng</h6>
+                                                <p class="text-muted small mb-0">Đơn hàng sẽ xuất hiện ở đây khi khách đặt hàng.</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom CSS for Dashboard -->
+    <style>
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+        .stat-number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        .stat-change {
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+        .list-group-item-action:hover {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin: 0 -12px;
+            padding-left: 12px !important;
+            padding-right: 12px !important;
+        }
+        .empty-state-mini {
+            opacity: 0.7;
+        }
+    </style>
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Revenue Chart
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Th1', 'Th2', 'Th3', 'Th4', 'Th5', 'Th6'],
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: [12000000, 19000000, 15000000, 22000000, 28000000, 32000000],
+                    borderColor: '#d4a574',
+                    backgroundColor: 'rgba(212, 165, 116, 0.1)',
+                    tension: 0.4,
+                    fill: true,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#d4a574',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 3,
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(0,0,0,0.04)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value / 1000000 + 'tr';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <partial name="_ValidationScriptsPartial" />
+

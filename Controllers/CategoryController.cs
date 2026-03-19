@@ -16,6 +16,7 @@ namespace BC_ASP.Controllers
         }
 
         // GET: /Category
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Categories.ToListAsync());
@@ -159,3 +160,4 @@ namespace BC_ASP.Controllers
         }
     }
 }
+

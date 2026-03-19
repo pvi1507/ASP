@@ -4,14 +4,14 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BC_ASP.Data;
 using BC_ASP.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace BC_ASP.Controllers
 {
     public class ProductController : Controller
     {
         private readonly ApplicationDbContext _context;
-
-private readonly IWebHostEnvironment _env;
+        private readonly IWebHostEnvironment _env;
 
         public ProductController(ApplicationDbContext context, IWebHostEnvironment env)
         {
@@ -19,7 +19,7 @@ private readonly IWebHostEnvironment _env;
             _env = env;
         }
 
-        // GET: /Product
+        // GET: /Product - Public for customers
         public async Task<IActionResult> Index(string? searchString, int? categoryId)
         {
             var products = _context.Products
@@ -74,24 +74,25 @@ private readonly IWebHostEnvironment _env;
         }
 
         // POST: /Product/Create
-[HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> Create(Product product, IFormFile? ImageFile)
         {
             if (ModelState.IsValid)
             {
+                product.Id = 0; 
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
-                    var uploads = Path.Combine(_env.WebRootPath, "images");
+                    var uploads = Path.Combine(_env.WebRootPath, "images/products");
                     Directory.CreateDirectory(uploads);
-                    var fileName = "product-" + product.Id + Path.GetExtension(ImageFile.FileName);
+                    var fileName = "product-" + Guid.NewGuid().ToString("N")[..8] + Path.GetExtension(ImageFile.FileName);
                     var filePath = Path.Combine(uploads, fileName);
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await ImageFile.CopyToAsync(stream);
                     }
-                    product.ImageUrl = "/images/" + fileName;
+                    product.ImageUrl = "/images/products/" + fileName;
                 }
                 _context.Add(product);
                 await _context.SaveChangesAsync();
@@ -121,7 +122,7 @@ private readonly IWebHostEnvironment _env;
         }
 
         // POST: /Product/Edit/5
-[HttpPost]
+        [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,Employee")]
         public async Task<IActionResult> Edit(int id, Product product, IFormFile? ImageFile)
@@ -139,76 +140,76 @@ private readonly IWebHostEnvironment _env;
                     {
                         var uploads = Path.Combine(_env.WebRootPath, "images/products");
                         Directory.CreateDirectory(uploads);
-                        var fileName = "product-" + product.Id + Path.GetExtension(ImageFile.FileName);
+                        var fileName = "product-" + Guid.NewGuid().ToString("N")[..8] + Path.GetExtension(ImageFile.FileName);
                         var filePath = Path.Combine(uploads, fileName);
                         using (var stream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await ImageFile.CopyToAsync(stream);
-                        }
-                        product.ImageUrl = "/images/products/" + fileName;
-                    }
-                    _context.Update(product);
-                    await _context.SaveChangesAsync();
-                    TempData["Success"] = "Cập nhật sản phẩm thành công!";
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ProductExists(product.Id))
                     {
-                        return NotFound();
+                        await ImageFile.CopyToAsync(stream);
                     }
-                    else
-                    {
-                        throw;
-                    }
+                    product.ImageUrl = "/images/products/" + fileName;
                 }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CategoryId"] = new SelectList(_context.Categories.Where(c => c.IsActive), "Id", "Name", product.CategoryId);
-            return View(product);
-        }
-
-        // GET: /Product/Delete/5 - Admin only
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var product = await _context.Products
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.Id == id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return View(product);
-        }
-
-        // POST: /Product/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
-            {
-                // Soft delete
-                product.IsActive = false;
+                _context.Update(product);
                 await _context.SaveChangesAsync();
-                TempData["Success"] = "Xóa sản phẩm thành công!";
+                TempData["Success"] = "Cập nhật sản phẩm thành công!";
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ProductExists(product.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
             }
             return RedirectToAction(nameof(Index));
         }
-
-        private bool ProductExists(int id)
-        {
-            return _context.Products.Any(e => e.Id == id);
-        }
+        ViewData["CategoryId"] = new SelectList(_context.Categories.Where(c => c.IsActive), "Id", "Name", product.CategoryId);
+        return View(product);
     }
+
+    // GET: /Product/Delete/5 - Admin only
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Delete(int? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var product = await _context.Products
+            .Include(p => p.Category)
+            .FirstOrDefaultAsync(m => m.Id == id);
+
+        if (product == null)
+        {
+            return NotFound();
+        }
+
+        return View(product);
+    }
+
+    // POST: /Product/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        var product = await _context.Products.FindAsync(id);
+        if (product != null)
+        {
+            // Soft delete
+            product.IsActive = false;
+            await _context.SaveChangesAsync();
+            TempData["Success"] = "Xóa sản phẩm thành công!";
+        }
+        return RedirectToAction(nameof(Index));
+    }
+
+    private bool ProductExists(int id)
+    {
+        return _context.Products.Any(e => e.Id == id);
+    }
+}
 }

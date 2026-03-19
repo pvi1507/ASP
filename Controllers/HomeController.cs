@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BC_ASP.Data;
 using BC_ASP.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BC_ASP.Controllers
 {
@@ -40,6 +41,30 @@ namespace BC_ASP.Controllers
 
         public IActionResult Contact()
         {
+            return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AdminDashboard()
+        {
+            var totalProducts = await _context.Products.CountAsync();
+            var totalCategories = await _context.Categories.CountAsync();
+            var totalOrders = await _context.Orders.CountAsync();
+            var recentOrders = await _context.Orders
+                .OrderByDescending(o => o.OrderDate)
+                .Take(5)
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .ToListAsync();
+
+            ViewBag.Stats = new 
+            {
+                TotalProducts = totalProducts,
+                TotalCategories = totalCategories,
+                TotalOrders = totalOrders,
+                RecentOrders = recentOrders
+            };
+
             return View();
         }
 

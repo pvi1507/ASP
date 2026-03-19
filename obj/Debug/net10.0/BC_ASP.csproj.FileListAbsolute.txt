@@ -213,3 +213,4 @@ d:\BC_ASP\obj\Debug\net10.0\BC_ASP.pdb
 d:\BC_ASP\obj\Debug\net10.0\BC_ASP.genruntimeconfig.cache
 d:\BC_ASP\obj\Debug\net10.0\ref\BC_ASP.dll
 D:\BC_ASP\obj\Debug\net10.0\compressed\sadbehmo5l-{0}-ruvn094h8f-ruvn094h8f.gz
+D:\BC_ASP\obj\Debug\net10.0\BC_ASP.sourcelink.json

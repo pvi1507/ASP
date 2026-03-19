@@ -58,6 +58,11 @@ namespace BC_ASP.Controllers
                     {
                         return Redirect(returnUrl);
                     }
+                    var user = await _userManager.GetUserAsync(User);
+                    if (user != null && await _userManager.IsInRoleAsync(user, "Admin"))
+                    {
+                        return RedirectToAction("AdminDashboard", "Home");
+                    }
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -137,7 +142,7 @@ namespace BC_ASP.Controllers
         public async Task<IActionResult> VerifyOTP(string otp, string? returnUrl = null)
         {
             var storedOTP = HttpContext.Session.GetString("Reg_OTP");
-            var otpExpiry = HttpContext.Session.GetString("Reg_OTP_Time"); // Remove conflicting email var
+            var otpExpiry = HttpContext.Session.GetString("Reg_OTP_Time"); 
 
             var sessionEmail = HttpContext.Session.GetString("Reg_Email");
             if (string.IsNullOrEmpty(storedOTP) || string.IsNullOrEmpty(sessionEmail))
@@ -185,7 +190,7 @@ namespace BC_ASP.Controllers
                     var user = new ApplicationUser
                     {
                         UserName = fullName,
-                        Email = sessionEmail,
+                        Email = regEmail,
                         FullName = fullName,
                         Address = address,
                         EmailConfirmed = true
@@ -535,3 +540,4 @@ namespace BC_ASP.Controllers
         public List<string>? SelectedRoles { get; set; }
     }
 }
+
