@@ -44,7 +44,14 @@
                     <div class="row align-items-center">
                         <div class="col-3">
                             <div class="stat-icon bg-primary">
-                                <i class="fas fa-cake-slice"></i>
+                                @if (!string.IsNullOrEmpty(stats.RecentProductImage))
+                                {
+                                    <img src="@stats.RecentProductImage" alt="Product" class="stat-img" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">
+                                }
+                                else
+                                {
+                                    <i class="fas fa-cake-slice"></i>
+                                }
                             </div>
                         </div>
                         <div class="col-9 text-end">

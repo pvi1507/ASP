@@ -50,20 +50,28 @@ namespace BC_ASP.Controllers
             var totalProducts = await _context.Products.CountAsync();
             var totalCategories = await _context.Categories.CountAsync();
             var totalOrders = await _context.Orders.CountAsync();
-            var recentOrders = await _context.Orders
-                .OrderByDescending(o => o.OrderDate)
-                .Take(5)
-                .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Product)
-                .ToListAsync();
 
-            ViewBag.Stats = new 
-            {
-                TotalProducts = totalProducts,
-                TotalCategories = totalCategories,
-                TotalOrders = totalOrders,
-                RecentOrders = recentOrders
-            };
+    var recentOrders = await _context.Orders
+        .OrderByDescending(o => o.OrderDate)
+        .Take(5)
+        .Include(o => o.OrderDetails)
+        .ThenInclude(od => od.Product)
+        .ToListAsync();
+
+    var recentProduct = await _context.Products
+        .Where(p => p.IsActive && !string.IsNullOrEmpty(p.ImageUrl))
+        .OrderByDescending(p => p.CreatedAt)
+        .FirstOrDefaultAsync();
+
+    ViewBag.Stats = new 
+{
+    TotalProducts = totalProducts,
+    TotalCategories = totalCategories,
+    TotalOrders = totalOrders,
+    RecentOrders = recentOrders,
+    RecentProductImage = recentProduct?.ImageUrl ?? "/images/products/product-6.jpg"
+};
+
 
             return View();
         }
