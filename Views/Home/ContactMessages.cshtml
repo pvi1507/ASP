@@ -1,0 +1,130 @@
+@model List<BC_ASP.Models.ContactMessage>
+
+@{
+    ViewData["Title"] = "Tin nhắn liên hệ";
+    ViewData["AdminTitle"] = "Quản lý tin nhắn khách hàng";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">
+                        <i class="fas fa-envelope text-primary me-2"></i>
+                        Tin nhắn liên hệ
+                    </h1>
+                    <p class="text-muted mb-0">Xem và quản lý tất cả tin nhắn từ khách hàng (@Model.Count() tin nhắn)</p>
+                </div>
+                <a asp-action="AdminDashboard" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Quay lại Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Messages Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white border-bottom pb-0">
+            <h5 class="card-title mb-2">
+                <i class="fas fa-list text-info me-2"></i>
+                Danh sách tin nhắn
+            </h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>STT</th>
+                            <th>Khách hàng</th>
+                            <th>Email</th>
+                            <th>SĐT</th>
+                            <th>Chủ đề</th>
+                            <th>Thời gian</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Any())
+                        {
+                            
+                                int stt = 1;
+                            
+                            @foreach (var msg in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <strong> #@stt</strong>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <a asp-action="ContactMessageDetails" asp-route-id="@msg.Id" class="fw-bold text-decoration-none">
+                                                @msg.Name
+                                            </a>
+                                            <br />
+                                            <small class="text-muted">@msg.Subject</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <a href="mailto:@msg.Email" class="text-decoration-none">@msg.Email</a>
+                                    </td>
+                                    <td>@msg.Phone</td>
+                                    <td>
+                                        <span class="badge bg-primary">@msg.Subject</span>
+                                    </td>
+                                    <td>
+                                        <span class="text-muted small">@msg.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                                    </td>
+                                    <td>
+                                        @if (msg.IsRead)
+                                        {
+                                            <span class="badge bg-success">Đã đọc</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Chưa đọc</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="ContactMessageDetails" asp-route-id="@msg.Id" 
+                                           class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> Xem
+                                        </a>
+                                    </td>
+                                </tr>
+                                stt++;
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="empty-state">
+                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                        <h5 class="text-muted mb-1">Chưa có tin nhắn nào</h5>
+                                        <p class="text-muted">Tin nhắn từ khách hàng sẽ xuất hiện ở đây.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .empty-state {
+        opacity: 0.7;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+</style>
+

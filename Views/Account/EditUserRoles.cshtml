@@ -7,8 +7,17 @@
 
 <div class="card">
     <div class="card-body">
-        <h5>Người dùng: @Model.FullName</h5>
-        <p>Email: @Model.Email</p>
+
+        @if(Model != null)
+        {
+@Model!.FullName
+            <p>Email: @Model.Email</p>
+        }
+        else
+        {
+            <h5>Người dùng không tồn tại</h5>
+        }
+
         
         <form asp-action="EditUserRoles" method="post">
             <input type="hidden" asp-for="Id">
@@ -20,8 +29,8 @@
                     {
                         <div class="form-check">
                             @{
-                                var isInRole = ViewBag.UserRoles as IList<string>;
-                                var isChecked = isInRole != null && isInRole.Contains(role);
+                                var isInRole = ViewBag.UserRoles as IList<string> ?? new List<string>();
+                                var isChecked = isInRole.Contains(role);
                             }
                             <input type="checkbox" name="SelectedRoles" value="@role" 
                                    class="form-check-input" @(isChecked ? "checked" : "")>

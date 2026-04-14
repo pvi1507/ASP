@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BC_ASP.Data;
 using BC_ASP.Models;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using BC_ASP.Data;
+using BC_ASP.Models;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BC_ASP.Controllers
@@ -74,6 +78,32 @@ namespace BC_ASP.Controllers
 
 
             return View();
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ContactMessages()
+        {
+            var messages = await _context.ContactMessages
+                .OrderByDescending(m => m.CreatedAt)
+                .ToListAsync();
+            return View(messages);
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> ContactMessageDetails(int id)
+        {
+            var message = await _context.ContactMessages.FindAsync(id);
+            if (message == null)
+            {
+                return NotFound();
+            }
+            if (!message.IsRead)
+            {
+                message.IsRead = true;
+                _context.Update(message);
+                await _context.SaveChangesAsync();
+            }
+            return View(message);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -7,6 +7,7 @@ using BC_ASP.Models;
 using BC_ASP.Services;
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using BC_ASP.Extensions;
 
 namespace BC_ASP.Controllers
 {
@@ -54,6 +55,15 @@ namespace BC_ASP.Controllers
 
                 if (result.Succeeded)
                 {
+                    var currentUser = await _userManager.GetUserAsync(User);
+                    // Load user's cart to session after login
+                    if (currentUser != null)
+                    {
+                    var userId = currentUser.Id;
+                    await HttpContext.Session.LoadUserCartToSession(_context, userId);
+
+                    }
+
                     if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                     {
                         return Redirect(returnUrl);
@@ -85,27 +95,17 @@ namespace BC_ASP.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public IActionResult Register(RegisterViewModel model, string? returnUrl = null)
+        // Thêm async Task để có thể đợi (await) gửi mail
+        public async Task<IActionResult> Register(RegisterViewModel model, string? returnUrl = null) 
         {
             ViewData["ReturnUrl"] = returnUrl;
             
             if (ModelState.IsValid)
             {
-                // Check if email already exists
-                // TEMP DISABLE EMAIL CHECK FOR TESTING
-                /*
-                var existingUser = await _userManager.FindByEmailAsync(model.Email);
-                if (existingUser != null)
-                {
-                    ModelState.AddModelError(string.Empty, "Email này đã được sử dụng.");
-                    return View(model);
-                }
-                */
-
-                // Generate OTP
+                // 1. Tạo OTP
                 var otp = GenerateOTP();
                 
-                // Store user info in session
+                // 2. Lưu thông tin vào session
                 HttpContext.Session.SetString("Reg_Email", model.Email);
                 HttpContext.Session.SetString("Reg_Password", model.Password);
                 HttpContext.Session.SetString("Reg_FullName", model.FullName);
@@ -113,8 +113,20 @@ namespace BC_ASP.Controllers
                 HttpContext.Session.SetString("Reg_OTP", otp);
                 HttpContext.Session.SetString("Reg_OTP_Time", DateTime.Now.AddMinutes(5).ToString());
                 
-                TempData["Success"] = $"Mã OTP đã được gửi đến {model.Email}!";
-                return RedirectToAction("VerifyOTP");
+                // --- DÒNG CÒN THIẾU ĐÂY NÈ ---
+                // 3. Thực hiện gửi mail ngay lúc này
+                var sent = await _emailService.SendOTPEmailAsync(model.Email, otp);
+
+                if (sent)
+                {
+                    TempData["Success"] = $"Mã OTP đã được gửi đến {model.Email}!";
+                    return RedirectToAction("VerifyOTP");
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Không thể gửi email OTP. Vui lòng kiểm tra lại địa chỉ email.");
+                }
+                // -----------------------------
             }
             return View(model);
         }
@@ -189,7 +201,7 @@ namespace BC_ASP.Controllers
                     // Create user
                     var user = new ApplicationUser
                     {
-                        UserName = fullName,
+                        UserName = regEmail,
                         Email = regEmail,
                         FullName = fullName,
                         Address = address,

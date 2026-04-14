@@ -2,14 +2,26 @@
     ViewData["Title"] = "BC ASP Bakery - Bánh Kem Hiện Đại";
 }
 
-<!-- Hero Section - Fullscreen with Image -->
-<section class="hero-section">
-    <div class="hero-background">
-        <img src="~/images/hero-cake.jpg" alt="Birthday Cake">
+<section class="hero-section" style="position: relative; overflow: hidden; min-height: 100vh;"> 
+    
+    <div id="homeHeroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="4000" data-bs-pause="false" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;">
+        <div class="carousel-inner" style="height: 100%;">
+            <div class="carousel-item active" style="height: 100%;">
+                <img src="~/images/hero-cake.jpg" alt="Birthday Cake 1" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="carousel-item" style="height: 100%;">
+                <img src="~/images/hero-cake2.jpg" alt="Birthday Cake 2" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="carousel-item" style="height: 100%;">
+                <img src="~/images/hero-cake3.jpg" alt="Birthday Cake 3" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
     </div>
-    <div class="hero-overlay"></div>
-    <div class="container-fluid px-0">
-        <div class="row g-0">
+
+    <div class="hero-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1;"></div>
+    
+    <div class="container-fluid px-0" style="position: relative; z-index: 2; height: 100%; display: flex; align-items: center;">
+        <div class="row g-0 w-100">
             <div class="col-lg-6">
                 <div class="hero-content">
                     <h1 class="hero-title">
@@ -33,7 +45,6 @@
     </div>
 </section>
 
-<!-- Categories Section -->
 @if (ViewBag.Categories != null && ViewBag.Categories.Count > 0)
 {
     <section class="category-section">
@@ -61,7 +72,6 @@
     </section>
 }
 
-<!-- Featured Products Section -->
 @if (ViewBag.FeaturedProducts != null && ViewBag.FeaturedProducts.Count > 0)
 {
     <section class="section-padding">
@@ -76,16 +86,18 @@
                     <div class="col-md-6 col-lg-3">
                         <div class="product-card">
                             <div class="product-image">
-                                @if (!string.IsNullOrEmpty(product.ImageUrl))
-                                {
-                                    <img src="@product.ImageUrl" alt="@product.Name">
+                                
+                                @{
+                                    string imagePath = $"/images/products/{product.Id}.jpg";
                                 }
-                                else
-                                {
-                                    <div class="product-placeholder">
-                                        <i class="fas fa-birthday-cake"></i>
-                                    </div>
-                                }
+
+                                <img src="@imagePath" alt="@product.Name" 
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                     
+                                <div class="product-placeholder" style="display: none; justify-content: center; align-items: center; width: 100%; height: 100%; background: #f8f9fa;">
+                                    <i class="fas fa-birthday-cake" style="font-size: 2rem; color: #ccc;"></i>
+                                </div>
+
                                 @if (product.IsFeatured)
                                 {
                                     <span class="product-badge">Hot</span>
@@ -134,7 +146,6 @@
     </section>
 }
 
-<!-- Features Section -->
 <section class="features-section">
     <div class="container">
         <div class="row g-4">
@@ -169,7 +180,6 @@
     </div>
 </section>
 
-<!-- Why Choose Us Section -->
 <section class="section-padding" style="background: var(--white);">
     <div class="container">
         <div class="text-center mb-5">
@@ -216,5 +226,3 @@
         </div>
     </div>
 </section>
-
-

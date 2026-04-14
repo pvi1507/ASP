@@ -15,6 +15,8 @@ namespace BC_ASP.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
+public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<ContactMessage> ContactMessages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -77,6 +79,37 @@ namespace BC_ASP.Data
                     .WithMany()
                     .HasForeignKey(od => od.ProductId)
                     .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            // CartItem configuration
+            builder.Entity<CartItem>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Quantity).IsRequired();
+                
+                entity.HasOne(c => c.User)
+                    .WithMany()
+                    .HasForeignKey(c => c.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(c => c.Product)
+                    .WithMany()
+                    .HasForeignKey(c => c.ProductId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(c => c.UserId);
+            });
+
+            // ContactMessage configuration
+            builder.Entity<ContactMessage>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Phone).HasMaxLength(20);
+                entity.Property(e => e.Subject).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Message).IsRequired().HasMaxLength(2000);
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
             });
         }
     }

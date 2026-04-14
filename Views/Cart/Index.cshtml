@@ -1,8 +1,8 @@
 @model List<BC_ASP.Models.CartItem>
 @{
     ViewData["Title"] = "Giỏ hàng";
-    decimal subTotal = Model.Sum(x => x.Quantity * x.Product.Price);
-    decimal discount = 0; // TODO: promo
+    decimal subTotal = Model?.Sum(x => x.Quantity * (x.Product?.Price ?? 0)) ?? 0;
+    decimal discount = 0;
     decimal grandTotal = subTotal - discount;
 }
 
@@ -16,12 +16,12 @@
     <div class="container">
         <div class="products-hero-content text-center text-white">
             <h1 class="products-hero-title">Giỏ Hàng Của Bạn</h1>
-            <p class="products-hero-subtitle">@Model.Count sản phẩm</p>
+            <p class="products-hero-subtitle">@(Model?.Count ?? 0) sản phẩm</p>
         </div>
     </div>
 </div>
 
-@if (Model.Count == 0)
+@if (Model == null || Model.Count == 0)
 {
     <section class="py-5">
         <div class="container">
@@ -57,9 +57,9 @@ else
                                     <div class="row align-items-center g-4">
                                         <!-- Image -->
                                         <div class="col-md-2">
-                                            @if (!string.IsNullOrEmpty(item.Product.ImageUrl))
+                                            @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
                                             {
-                                                <img src="@item.Product.ImageUrl" alt="@item.Product.Name" class="img-fluid rounded-3 shadow-sm" style="height: 100px; width: 100px; object-fit: cover;">
+                                                <img src="@item.Product.ImageUrl" alt="@(item.Product?.Name ?? "Sản phẩm")" class="img-fluid rounded-3 shadow-sm" style="height: 100px; width: 100px; object-fit: cover;">
                                             }
                                             else
                                             {
@@ -72,10 +72,10 @@ else
                                         <!-- Product Info -->
                                         <div class="col-md-5">
                                             <h5 class="product-title mb-1">
-                                                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-dark text-decoration-none">@item.Product.Name</a>
+                                                <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-dark text-decoration-none">@(item.Product?.Name ?? "Sản phẩm")</a>
                                             </h5>
-                                            <span class="badge bg-light text-dark">@item.Product.Category?.Name</span>
-                                            <p class="text-muted small mb-0">Giá: @String.Format("{0:N0} VNĐ", item.Product.Price)</p>
+                                            <span class="badge bg-light text-dark">@(item.Product?.Category?.Name ?? "Không danh mục")</span>
+                                            <p class="text-muted small mb-0">Giá: @String.Format("{0:N0} VNĐ", item.Product?.Price ?? 0)</p>
                                         </div>
 
                                         <!-- Quantity -->
@@ -86,7 +86,7 @@ else
                                                     <button type="button" class="btn btn-outline-secondary qty-btn" onclick="changeQty(this, -1)">
                                                         <i class="fas fa-minus"></i>
                                                     </button>
-                                                    <input type="number" name="quantity" value="@item.Quantity" min="1" max="@item.Product.Stock" class="form-control text-center qty-input" readonly>
+                                                    <input type="number" name="quantity" value="@item.Quantity" min="1" max="@(item.Product?.Stock ?? 999)" class="form-control text-center qty-input" readonly>
                                                     <button type="button" class="btn btn-outline-secondary qty-btn" onclick="changeQty(this, 1)">
                                                         <i class="fas fa-plus"></i>
                                                     </button>
@@ -96,10 +96,10 @@ else
 
                                         <!-- Subtotal & Remove -->
                                         <div class="col-md-3 text-end">
-                                            <div class="h5 mb-2 fw-bold text-primary">@String.Format("{0:N0}", item.Quantity * item.Product.Price) VNĐ</div>
+                                            <div class="h5 mb-2 fw-bold text-primary">@String.Format("{0:N0}", item.Quantity * (item.Product?.Price ?? 0)) VNĐ</div>
                                             <form asp-action="Remove" method="post" class="remove-form d-inline">
                                                 <input type="hidden" name="productId" value="@item.ProductId">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger remove-btn" onclick="return confirm('Xóa @item.Product.Name?')">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger remove-btn" onclick="return confirm('Xóa @(item.Product?.Name ?? "Sản phẩm")?')">
                                                     <i class="fas fa-trash"></i> Xóa
                                                 </button>
                                             </form>
@@ -120,7 +120,7 @@ else
                             </div>
                             <div class="card-body p-4">
                                 <div class="d-flex justify-content-between mb-3">
-                                    <span>Tạm tính (@Model.Count sản phẩm):</span>
+                                    <span>Tạm tính (@(Model?.Count ?? 0) sản phẩm):</span>
                                     <span>@String.Format("{0:N0}", subTotal) VNĐ</span>
                                 </div>
                                 <div class="d-flex justify-content-between mb-4">
@@ -154,7 +154,7 @@ else
             let val = parseInt(input.value) || 1;
             val = Math.max(1, Math.min(val + delta, parseInt(input.max)));
             input.value = val;
-            input.parentElement.parentElement.submit(); // Update form
+            input.parentElement.parentElement.submit();
         }
     </script>
     <partial name="_ValidationScriptsPartial" />

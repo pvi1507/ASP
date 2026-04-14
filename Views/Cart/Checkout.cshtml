@@ -1,7 +1,7 @@
 @model List<BC_ASP.Models.CartItem>
 @{
     ViewData["Title"] = "Thanh toán";
-    decimal total = Model.Sum(x => x.Quantity * x.Product.Price);
+    decimal total = Model?.Sum(x => x.Quantity * (x.Product?.Price ?? 0)) ?? 0;
 }
 
 <!-- Checkout Hero -->

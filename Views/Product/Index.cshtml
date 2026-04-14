@@ -1,31 +1,35 @@
-
-
-}
-
-<!-- Hero Section -->
-<div class="hero-section">
-    <div class="hero-background">
-        <img src="~/images/hero-cake.jpg" alt="Sản phẩm Banner">
+<div class="hero-section" style="position: relative; overflow: hidden; min-height: 100vh;"> 
+    <div id="bannerCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-pause="false" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0;">
+        <div class="carousel-inner" style="height: 100%;">
+            <div class="carousel-item active" style="height: 100%;">
+                <img src="~/images/hero-cake.jpg" alt="Sản phẩm Banner 1" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="carousel-item" style="height: 100%;">
+                <img src="~/images/hero-cake2.jpg" alt="Sản phẩm Banner 2" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="carousel-item" style="height: 100%;">
+                <img src="~/images/hero-cake3.jpg" alt="Sản phẩm Banner 3" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
     </div>
 
-    <div class="products-hero-overlay"></div>
-    <div class="container position-relative">
+    <div class="products-hero-overlay" style="z-index: 1; position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></div>
+    
+    <div class="container position-relative" style="z-index: 2; height: 100%; display: flex; align-items: center; justify-content: center; text-align: center;">
         <div class="products-hero-content">
             <h1 class="products-hero-title">Sản Phẩm</h1>
             <p class="products-hero-subtitle">Khám phá bộ sưu tập bánh kem thủ công đặc biệt</p>
-            <div class="products-hero-breadcrumb">
-                <a asp-controller="Home" asp-action="Index">Trang chủ</a>
-                <span>/</span>
-                <span>Sản phẩm</span>
+            <div class="products-hero-breadcrumb" style="display: flex; justify-content: center; gap: 8px;">
+                <a asp-controller="Home" asp-action="Index" style="color: #ffc107; text-decoration: none;">Trang chủ</a>
+                <span style="color: white;">/</span>
+                <span style="color: white;">Sản phẩm</span>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Main Content -->
 <div class="products-section">
     <div class="container">
-        <!-- Search & Filter Section -->
         <div class="products-filter-card">
             <div class="row align-items-center">
                 <div class="col-lg-6">
@@ -62,8 +66,7 @@
             </div>
         </div>
 
-        <!-- Products Grid -->
-@if (Model.Count > 0)
+        @if (Model.Count > 0)
         {
             <div class="products-grid">
                 @foreach (var product in Model)
@@ -72,18 +75,19 @@
                         <div class="product-card-wrapper">
                             <div class="product-card-modern">
                                 <div class="product-image-wrapper">
-                                    @if (!string.IsNullOrEmpty(product.ImageUrl))
-                                    {
-                                        <img src="@product.ImageUrl" alt="@product.Name" class="product-img">
-                                    }
-                                    else
-                                    {
-                                        <div class="product-img-placeholder">
-                                            <i class="fas fa-birthday-cake"></i>
-                                        </div>
-                                    }
                                     
-                                    <!-- Badges -->
+                                    @{
+                                        // Tự tạo đường dẫn dựa vào ID sản phẩm
+                                        string imagePath = $"/images/products/{product.Id}.jpg";
+                                    }
+
+                                    <img src="@imagePath" alt="@product.Name" class="product-img" 
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                         
+                                    <div class="product-img-placeholder" style="display: none; justify-content: center; align-items: center; height: 100%; width: 100%; background: #f8f9fa;">
+                                        <i class="fas fa-birthday-cake" style="font-size: 2rem; color: #ccc;"></i>
+                                    </div>
+                                    
                                     <div class="product-badges">
                                         @if (product.IsFeatured)
                                         {
@@ -99,7 +103,6 @@
                                         }
                                     </div>
 
-                                    <!-- Quick Actions -->
                                     <div class="product-quick-actions">
                                         <a asp-action="Details" asp-route-id="@product.Id" class="quick-action-btn" title="Xem chi tiết">
                                             <i class="fas fa-eye"></i>
@@ -115,7 +118,6 @@
                                         }
                                     </div>
 
-                                    <!-- Add to Cart Overlay -->
                                     <div class="product-add-overlay">
                                         @if (User.Identity?.IsAuthenticated == true && product.Stock > 0)
                                         {
@@ -188,5 +190,3 @@
         }
     </div>
 </div>
-
-

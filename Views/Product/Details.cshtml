@@ -3,7 +3,6 @@
     ViewData["Title"] = Model.Name;
 }
 
-<!-- Product Hero Header -->
 <div class="hero-section" style="height: 300px;">
     <div class="hero-background">
         <img src="~/images/hero-cake.jpg" alt="Sản phẩm chi tiết">
@@ -28,25 +27,23 @@
     </div>
 </div>
 
-<!-- Product Details Section -->
 <section class="py-5" style="background: var(--bg-cream);">
     <div class="container">
         <div class="row g-5">
-            <!-- Product Gallery & Badges -->
             <div class="col-lg-6">
                 <div class="product-gallery position-relative">
-                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                    {
-                        <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid rounded-4 shadow-lg w-100" style="height: 500px; object-fit: cover;">
-                    }
-                    else
-                    {
-                        <div class="bg-light rounded-4 d-flex align-items-center justify-content-center" style="height: 500px;">
-                            <i class="fas fa-birthday-cake text-primary" style="font-size: 150px; opacity: 0.5;"></i>
-                        </div>
+                    
+                    @{
+                        string imagePath = $"/images/products/{Model.Id}.jpg";
                     }
 
-                    <!-- Badges -->
+                    <img src="@imagePath" alt="@Model.Name" class="img-fluid rounded-4 shadow-lg w-100" style="height: 500px; object-fit: cover;"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                         
+                    <div class="bg-light rounded-4 align-items-center justify-content-center" style="height: 500px; display: none;">
+                        <i class="fas fa-birthday-cake text-primary" style="font-size: 150px; opacity: 0.5;"></i>
+                    </div>
+
                     <div class="position-absolute top-20 start-0">
                         @if (Model.IsFeatured)
                         {
@@ -64,7 +61,6 @@
                 </div>
             </div>
 
-            <!-- Product Info & Buy Box -->
             <div class="col-lg-6">
                 <div class="product-info-card p-5 rounded-4 shadow-lg" style="background: var(--white); height: fit-content;">
                     <div class="d-flex align-items-center mb-4">
@@ -164,7 +160,6 @@
     </div>
 </section>
 
-<!-- Reviews Section (Placeholder) -->
 <section class="py-5 bg-white">
     <div class="container">
         <h2 class="section-title text-center mb-5">Đánh giá & Nhận xét</h2>
@@ -178,4 +173,3 @@
         </div>
     </div>
 </section>
-

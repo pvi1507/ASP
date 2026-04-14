@@ -1,0 +1,120 @@
+@model BC_ASP.Models.ContactMessage
+
+@{
+    ViewData["Title"] = "Chi tiết tin nhắn";
+    ViewData["AdminTitle"] = "Xem tin nhắn khách hàng";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid px-4 py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="h3 mb-1">
+                        <i class="fas fa-envelope-open text-success me-2"></i>
+                        Tin nhắn # @Model.Id
+                    </h1>
+                    <p class="text-muted mb-0">Từ <strong>@Model.Name</strong> - @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</p>
+                </div>
+                <div class="btn-group">
+                    <a asp-action="ContactMessages" class="btn btn-outline-secondary">
+                        <i class="fas fa-list me-1"></i>Danh sách
+                    </a>
+                    <a asp-controller="AdminDashboard" asp-action="AdminDashboard" class="btn btn-outline-primary">
+                        <i class="fas fa-tachometer-alt me-1"></i>Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Details Card -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-light border-bottom">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-user-circle me-2 text-primary"></i>
+                        Thông tin khách hàng
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="form-label fw-bold">Họ và tên:</label>
+                                <p class="mb-0">@Model.Name</p>
+                            </div>
+                            <div class="info-item">
+                                <label class="form-label fw-bold">Email:</label>
+                                <p class="mb-0"><a href="mailto:@Model.Email">@Model.Email</a></p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="info-item">
+                                <label class="form-label fw-bold">Số điện thoại:</label>
+                                <p class="mb-0">@(Model.Phone ?? "Không có")</p>
+                            </div>
+                            <div class="info-item">
+                                <label class="form-label fw-bold">Thời gian gửi:</label>
+                                <p class="mb-0"><span class="badge bg-info">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Content -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">
+                        <i class="fas fa-comment-dots me-2"></i>
+                        Nội dung tin nhắn - @Model.Subject
+                    </h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="message-content">
+                        <p class="lead">@Model.Message</p>
+                    </div>
+                    <hr />
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-success">
+                            <i class="fas fa-check-circle me-1"></i>
+                            Đã đọc
+                        </span>
+                        <div class="btn-group">
+                            <a href="mailto:@Model.Email?subject=Phản hồi: @Model.Subject&body=Cảm ơn bạn đã liên hệ..." class="btn btn-success btn-sm">
+                                <i class="fas fa-reply me-1"></i>Phản hồi email
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .info-item {
+        margin-bottom: 1.5rem;
+    }
+    .message-content {
+        min-height: 200px;
+        border-left: 4px solid var(--primary-color);
+        padding-left: 20px;
+        background: rgba(0,0,0,0.02);
+        border-radius: 8px;
+        padding: 20px;
+    }
+    .card-header {
+        border-radius: 12px 12px 0 0 !important;
+    }
+</style>
+

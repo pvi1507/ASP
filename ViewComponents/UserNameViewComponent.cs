@@ -21,7 +21,7 @@ public class UserNameViewComponent : ViewComponent
         var user = await _userManager.GetUserAsync((ClaimsPrincipal)User);
             if (user != null)
             {
-                ViewBag.UserFullName = user.FullName;
+                ViewBag.UserFullName = user!.FullName;
             }
         }
         return View();
