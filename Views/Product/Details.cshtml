@@ -65,12 +65,26 @@
                 <div class="product-info-card p-5 rounded-4 shadow-lg" style="background: var(--white); height: fit-content;">
                     <div class="d-flex align-items-center mb-4">
                         <div class="product-rating me-3">
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star text-warning"></i>
-                            <i class="fas fa-star-half-alt text-warning"></i>
-                            <span class="ms-2 fw-bold text-dark">4.8 (127 đánh giá)</span>
+                            @{
+                                var fullStars = (int)Model.AverageRating;
+                                var hasHalfStar = Model.AverageRating % 1 >= 0.5;
+                            }
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= fullStars)
+                                {
+                                    <i class="fas fa-star text-warning"></i>
+                                }
+                                else if (i == fullStars + 1 && hasHalfStar)
+                                {
+                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                }
+                                else
+                                {
+                                    <i class="far fa-star text-warning"></i>
+                                }
+                            }
+                            <span class="ms-2 fw-bold text-dark">@Model.AverageRating.ToString("F1") (@Model.ReviewCount đánh giá)</span>
                         </div>
                     </div>
 
@@ -165,11 +179,164 @@
         <h2 class="section-title text-center mb-5">Đánh giá & Nhận xét</h2>
         <div class="row">
             <div class="col-12">
-                <div class="alert alert-info">
-                    <i class="fas fa-star me-2"></i>
-                    Chức năng đánh giá đang được phát triển. Cảm ơn bạn!
-                </div>
+                @if (!User.Identity.IsAuthenticated)
+                {
+                    <div class="alert alert-info mb-5">
+                        <i class="fas fa-star me-2"></i>
+                        <strong>Đăng nhập</strong> để có thể đánh giá sản phẩm!
+                        <a asp-controller="Account" asp-action="Login" class="alert-link ms-2">Đăng nhập ngay</a>
+                    </div>
+                }
+                else
+                {
+                    <!-- Review Form -->
+                    <div class="card mb-5 border-0 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-star me-2"></i>Đánh giá sản phẩm của bạn</h5>
+                        </div>
+                        <div class="card-body">
+                            <form id="reviewForm">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="productId" value="@Model.Id" />
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Điểm đánh giá của bạn:</label>
+                                    <div class="star-rating mt-2" data-rating="0">
+                                        <i class="far fa-star star" data-value="1"></i>
+                                        <i class="far fa-star star" data-value="2"></i>
+                                        <i class="far fa-star star" data-value="3"></i>
+                                        <i class="far fa-star star" data-value="4"></i>
+                                        <i class="far fa-star star" data-value="5"></i>
+                                    </div>
+                                    <input type="hidden" id="rating" name="rating" value="0" required />
+                                    <div class="form-text">Nhấp vào sao để đánh giá (1-5 sao)</div>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="form-label fw-bold">Nhận xét của bạn:</label>
+                                    <textarea name="comment" rows="4" class="form-control" placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg px-5">
+                                    <i class="fas fa-paper-plane me-2"></i>Gửi đánh giá
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+
+                <!-- Reviews List -->
+                @if (Model.Reviews.Any())
+                {
+                    <h4 class="mb-4">Các đánh giá khác (@Model.Reviews.Count())</h4>
+                    @foreach (var review in Model.Reviews.OrderByDescending(r => r.CreatedAt).Take(10))
+                    {
+                        <div class="review-item p-4 mb-4 border rounded-3">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    @for (int i = 1; i <= review.Rating; i++)
+                                    {
+                                        <i class="fas fa-star text-warning"></i>
+                                    }
+                                    @for (int i = review.Rating + 1; i <= 5; i++)
+                                    {
+                                        <i class="far fa-star text-secondary"></i>
+                                    }
+                                    <span class="ms-2 text-muted small">(@review.Rating/@Model.AverageRating.ToString("F1") sao)</span>
+                                </div>
+                                <small class="text-muted">@review.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                            </div>
+                            <h6 class="fw-bold mb-1">@review.User.FullName</h6>
+                            @if (!string.IsNullOrEmpty(review.Comment))
+                            {
+                                <p class="mb-0 text-muted">@review.Comment</p>
+                            }
+                        </div>
+                    }
+                    @if (Model.Reviews.Count() > 10)
+                    {
+                        <div class="text-center">
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-primary">Xem thêm đánh giá</a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-5">
+                        <i class="fas fa-comments text-muted mb-3" style="font-size: 4rem;"></i>
+                        <h5 class="text-muted">Chưa có đánh giá nào</h5>
+                        <p class="text-muted">Hãy là người đầu tiên đánh giá sản phẩm này!</p>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating');
+    
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = parseInt(this.dataset.value);
+            ratingInput.value = value;
+            
+            stars.forEach(s => s.classList.remove('fas', 'text-warning'));
+            stars.forEach(s => s.classList.add('far'));
+            
+            for (let i = 1; i <= value; i++) {
+                stars[i-1].classList.remove('far');
+                stars[i-1].classList.add('fas', 'text-warning');
+            }
+        });
+        
+        star.addEventListener('mouseover', function() {
+            const value = parseInt(this.dataset.value);
+            stars.forEach((s, index) => {
+                if (index < value) {
+                    s.classList.remove('far');
+                    s.classList.add('fas', 'text-warning');
+                } else {
+                    s.classList.remove('fas', 'text-warning');
+                    s.classList.add('far');
+                }
+            });
+        });
+    });
+    
+    document.querySelector('.star-rating').addEventListener('mouseleave', function() {
+        const currentRating = parseInt(ratingInput.value);
+        stars.forEach((s, index) => {
+            if (index < currentRating) {
+                s.classList.remove('far');
+                s.classList.add('fas', 'text-warning');
+            } else {
+                s.classList.remove('fas', 'text-warning');
+                s.classList.add('far');
+            }
+        });
+    });
+    
+    document.getElementById('reviewForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (document.getElementById('rating').value == '0') {
+            alert('Vui lòng chọn số sao đánh giá!');
+            return;
+        }
+        
+        const formData = new FormData(this);
+        const response = await fetch('/Product/ReviewCreate', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            alert(result.message);
+            location.reload();
+        } else {
+            alert(result.message);
+        }
+    });
+});
+</script>

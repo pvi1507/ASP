@@ -55,11 +55,20 @@ namespace BC_ASP.Controllers
 
             var product = await _context.Products
                 .Include(p => p.Category)
+                .Include(p => p.Reviews)
+                    .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (product == null || !product.IsActive)
             {
                 return NotFound();
+            }
+
+            // Compute average rating if not set
+            if (product.ReviewCount == 0 && product.Reviews.Any())
+            {
+                product.AverageRating = product.Reviews.Average(r => r.Rating);
+                product.ReviewCount = product.Reviews.Count();
             }
 
             return View(product);
@@ -168,6 +177,52 @@ namespace BC_ASP.Controllers
         ViewData["CategoryId"] = new SelectList(_context.Categories.Where(c => c.IsActive), "Id", "Name", product.CategoryId);
         return View(product);
     }
+
+        // POST: /Product/ReviewCreate
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize]
+        public async Task<IActionResult> ReviewCreate(int productId, int rating, string? comment)
+        {
+            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "Không tìm thấy thông tin người dùng." });
+            }
+
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+            {
+                return Json(new { success = false, message = "Sản phẩm không tồn tại." });
+            }
+
+            // Check if user already reviewed
+            var existingReview = await _context.Reviews
+                .FirstOrDefaultAsync(r => r.ProductId == productId && r.UserId == userId);
+            if (existingReview != null)
+            {
+                return Json(new { success = false, message = "Bạn đã đánh giá sản phẩm này rồi." });
+            }
+
+            var review = new Review
+            {
+                ProductId = productId,
+                UserId = userId,
+                Rating = rating,
+                Comment = comment,
+                CreatedAt = DateTime.Now
+            };
+
+            _context.Reviews.Add(review);
+            await _context.SaveChangesAsync();
+
+            // Update product stats
+            product.ReviewCount = await _context.Reviews.CountAsync(r => r.ProductId == productId);
+            product.AverageRating = await _context.Reviews.Where(r => r.ProductId == productId).AverageAsync(r => (double?)r.Rating) ?? 0;
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Cảm ơn đánh giá của bạn!" });
+        }
 
     // GET: /Product/Delete/5 - Admin only
     [Authorize(Roles = "Admin")]

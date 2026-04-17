@@ -6,7 +6,6 @@
     decimal grandTotal = subTotal - discount;
 }
 
-<!-- Cart Hero -->
 <div class="hero-section" style="height: 280px;">
     <div class="hero-background">
         <img src="~/images/hero-cake.jpg" alt="Giỏ hàng Banner">
@@ -47,7 +46,6 @@ else
     <section class="py-5">
         <div class="container">
             <div class="row g-4">
-                <!-- Cart Items -->
                 <div class="col-lg-8">
                     <div class="row g-3">
                         @foreach (var item in Model)
@@ -55,21 +53,21 @@ else
                             <div class="col-12">
                                 <div class="cart-item-card p-4 rounded-4 shadow-sm" style="background: var(--white); border: 1px solid #eee;">
                                     <div class="row align-items-center g-4">
-                                        <!-- Image -->
                                         <div class="col-md-2">
-                                            @if (!string.IsNullOrEmpty(item.Product?.ImageUrl))
-                                            {
-                                                <img src="@item.Product.ImageUrl" alt="@(item.Product?.Name ?? "Sản phẩm")" class="img-fluid rounded-3 shadow-sm" style="height: 100px; width: 100px; object-fit: cover;">
+                                            
+                                            @{
+                                                string imagePath = $"/images/products/{item.ProductId}.jpg";
                                             }
-                                            else
-                                            {
-                                                <div class="bg-light rounded-3 d-flex align-items-center justify-content-center" style="height: 100px; width: 100px;">
-                                                    <i class="fas fa-birthday-cake text-primary fs-2"></i>
-                                                </div>
-                                            }
+
+                                            <img src="@imagePath" alt="@(item.Product?.Name ?? "Sản phẩm")" class="img-fluid rounded-3 shadow-sm" style="height: 100px; width: 100px; object-fit: cover;"
+                                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                 
+                                            <div class="bg-light rounded-3 align-items-center justify-content-center" style="height: 100px; width: 100px; display: none;">
+                                                <i class="fas fa-birthday-cake text-primary fs-2"></i>
+                                            </div>
+                                            
                                         </div>
 
-                                        <!-- Product Info -->
                                         <div class="col-md-5">
                                             <h5 class="product-title mb-1">
                                                 <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-dark text-decoration-none">@(item.Product?.Name ?? "Sản phẩm")</a>
@@ -78,7 +76,6 @@ else
                                             <p class="text-muted small mb-0">Giá: @String.Format("{0:N0} VNĐ", item.Product?.Price ?? 0)</p>
                                         </div>
 
-                                        <!-- Quantity -->
                                         <div class="col-md-2">
                                             <form asp-action="Update" method="post" class="qty-form">
                                                 <input type="hidden" name="productId" value="@item.ProductId">
@@ -94,12 +91,11 @@ else
                                             </form>
                                         </div>
 
-                                        <!-- Subtotal & Remove -->
                                         <div class="col-md-3 text-end">
                                             <div class="h5 mb-2 fw-bold text-primary">@String.Format("{0:N0}", item.Quantity * (item.Product?.Price ?? 0)) VNĐ</div>
                                             <form asp-action="Remove" method="post" class="remove-form d-inline">
                                                 <input type="hidden" name="productId" value="@item.ProductId">
-                                                <button type="submit" class="btn btn-sm btn-outline-danger remove-btn" onclick="return confirm('Xóa @(item.Product?.Name ?? "Sản phẩm")?')">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger remove-btn" onclick="return confirm('Xóa @(item.Product?.Name ?? "Sản phẩm") khỏi giỏ hàng?')">
                                                     <i class="fas fa-trash"></i> Xóa
                                                 </button>
                                             </form>
@@ -111,7 +107,6 @@ else
                     </div>
                 </div>
 
-                <!-- Summary Sticky -->
                 <div class="col-lg-4">
                     <div class="cart-summary-card sticky-top" style="top: 100px;">
                         <div class="card rounded-4 shadow-lg border-0">
@@ -159,4 +154,3 @@ else
     </script>
     <partial name="_ValidationScriptsPartial" />
 }
-

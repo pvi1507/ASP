@@ -15,8 +15,9 @@ namespace BC_ASP.Data
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderDetail> OrderDetails { get; set; }
-public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
         public DbSet<ContactMessage> ContactMessages { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -110,6 +111,28 @@ public DbSet<CartItem> CartItems { get; set; }
                 entity.Property(e => e.Subject).IsRequired().HasMaxLength(200);
                 entity.Property(e => e.Message).IsRequired().HasMaxLength(2000);
                 entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+            });
+
+            // Review configuration
+            builder.Entity<Review>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Rating).IsRequired();
+                entity.Property(e => e.Comment).HasMaxLength(1000);
+                entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+
+                entity.HasOne(r => r.Product)
+                    .WithMany(p => p.Reviews)
+                    .HasForeignKey(r => r.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(r => r.User)
+                    .WithMany()
+                    .HasForeignKey(r => r.UserId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(r => r.ProductId);
+                entity.HasIndex(r => new { r.ProductId, r.UserId }).IsUnique();
             });
         }
     }

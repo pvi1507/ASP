@@ -2,10 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using BC_ASP.Data;
 using BC_ASP.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BC_ASP.Data;
-using BC_ASP.Models;
 using Microsoft.AspNetCore.Authorization;
 
 namespace BC_ASP.Controllers
