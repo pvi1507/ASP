@@ -118,31 +118,34 @@
                                         }
                                     </div>
 
-                                    <div class="product-add-overlay">
-                                        @if (User.Identity?.IsAuthenticated == true && product.Stock > 0)
-                                        {
-                                            <form asp-controller="Cart" asp-action="Add" asp-route-productId="@product.Id" method="post">
-                                                <button type="submit" class="btn-add-cart">
-                                                    <i class="fas fa-shopping-cart"></i>
-                                                    <span>Thêm vào giỏ</span>
+                                    @if (!User.IsInRole("Admin") && !User.IsInRole("Employee"))
+                                    {
+                                        <div class="product-add-overlay">
+                                            @if (User.Identity?.IsAuthenticated == true && product.Stock > 0)
+                                            {
+                                                <form asp-controller="Cart" asp-action="Add" asp-route-productId="@product.Id" method="post">
+                                                    <button type="submit" class="btn-add-cart">
+                                                        <i class="fas fa-shopping-cart"></i>
+                                                        <span>Thêm vào giỏ</span>
+                                                    </button>
+                                                </form>
+                                            }
+                                            else if (User.Identity?.IsAuthenticated != true)
+                                            {
+                                                <a asp-controller="Account" asp-action="Login" class="btn-add-cart">
+                                                    <i class="fas fa-sign-in-alt"></i>
+                                                    <span>Đăng nhập để mua</span>
+                                                </a>
+                                            }
+                                            else
+                                            {
+                                                <button class="btn-add-cart disabled" disabled>
+                                                    <i class="fas fa-times-circle"></i>
+                                                    <span>Hết hàng</span>
                                                 </button>
-                                            </form>
-                                        }
-                                        else if (User.Identity?.IsAuthenticated != true)
-                                        {
-                                            <a asp-controller="Account" asp-action="Login" class="btn-add-cart">
-                                                <i class="fas fa-sign-in-alt"></i>
-                                                <span>Đăng nhập để mua</span>
-                                            </a>
-                                        }
-                                        else
-                                        {
-                                            <button class="btn-add-cart disabled" disabled>
-                                                <i class="fas fa-times-circle"></i>
-                                                <span>Hết hàng</span>
-                                            </button>
-                                        }
-                                    </div>
+                                            }
+                                        </div>
+                                    }
                                 </div>
 
                                 <div class="product-info">

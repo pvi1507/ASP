@@ -103,7 +103,7 @@
                         <p class="lead">@Model.Description</p>
                     </div>
 
-                    @if (User.Identity.IsAuthenticated && Model.Stock > 0)
+@if (!User.IsInRole("Admin") && !User.IsInRole("Employee") && User.Identity.IsAuthenticated && Model.Stock > 0)
                     {
                         <div class="buy-box p-4 rounded-3 mb-4" style="background: linear-gradient(135deg, var(--primary-light), #fff);">
                             <h5 class="mb-3 fw-bold">Thêm vào giỏ hàng</h5>
@@ -121,7 +121,7 @@
                             </form>
                         </div>
                     }
-                    else if (!User.Identity.IsAuthenticated)
+                    else if (!User.IsInRole("Admin") && !User.IsInRole("Employee") && !User.Identity.IsAuthenticated)
                     {
                         <div class="buy-box p-4 rounded-3 mb-4 text-center" style="background: linear-gradient(135deg, var(--primary-light), #fff);">
                             <h5 class="mb-4">Đăng nhập để mua hàng</h5>
@@ -130,7 +130,7 @@
                             </a>
                         </div>
                     }
-                    else
+                    else if (!User.IsInRole("Admin") && !User.IsInRole("Employee") && Model.Stock <= 0)
                     {
                         <div class="buy-box p-4 rounded-3 text-center" style="background: linear-gradient(135deg, #f8d7da, #fff); border: 2px dashed #dc3545;">
                             <i class="fas fa-exclamation-triangle text-danger mb-3" style="font-size: 48px;"></i>

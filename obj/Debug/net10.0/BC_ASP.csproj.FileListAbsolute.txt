@@ -201,7 +201,6 @@ D:\BC_ASP\obj\Debug\net10.0\rjimswa.dswa.cache.json
 D:\BC_ASP\obj\Debug\net10.0\rjsmrazor.dswa.cache.json
 D:\BC_ASP\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
 D:\BC_ASP\obj\Debug\net10.0\scopedcss\bundle\BC_ASP.styles.css
-D:\BC_ASP\obj\Debug\net10.0\compressed\sadbehmo5l-{0}-ruvn094h8f-ruvn094h8f.gz
 D:\BC_ASP\obj\Debug\net10.0\compressed\4exytkt0av-{0}-1krb0mrb70-1krb0mrb70.gz
 D:\BC_ASP\obj\Debug\net10.0\staticwebassets.build.json
 D:\BC_ASP\obj\Debug\net10.0\staticwebassets.build.json.cache
@@ -214,3 +213,4 @@ D:\BC_ASP\obj\Debug\net10.0\refint\BC_ASP.dll
 D:\BC_ASP\obj\Debug\net10.0\BC_ASP.pdb
 D:\BC_ASP\obj\Debug\net10.0\BC_ASP.genruntimeconfig.cache
 D:\BC_ASP\obj\Debug\net10.0\ref\BC_ASP.dll
+D:\BC_ASP\obj\Debug\net10.0\compressed\sadbehmo5l-{0}-fpghe0i65i-fpghe0i65i.gz
