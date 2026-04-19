@@ -1,164 +1,106 @@
-@model List<BC_ASP.Models.CartItem>
+@model object
 @{
     ViewData["Title"] = "Thanh toán";
-    decimal total = Model?.Sum(x => x.Quantity * (x.Product?.Price ?? 0)) ?? 0;
+    
+    var product = ViewBag.Product as BC_ASP.Models.Product;
+    var quantity = (int?)ViewBag.Quantity ?? 1;
+    var total = (decimal?)ViewBag.Total ?? 0;
 }
 
-<!-- Checkout Hero -->
+@if (product == null)
+{
+    <div class="alert alert-danger">
+        <h4>Lỗi: Sản phẩm không tồn tại!</h4>
+        <a asp-action="Index" asp-controller="Product" class="btn btn-primary">Chọn sản phẩm khác</a>
+    </div>
+}
+else
+{
 <div class="hero-section" style="height: 280px;">
     <div class="hero-background">
-        <img src="~/images/hero-cake.jpg" alt="Thanh toán Banner">
+        <img src="~/images/hero-cake.jpg" alt="Thanh toán">
     </div>
-
     <div class="products-hero-overlay"></div>
     <div class="container">
         <div class="products-hero-content text-center text-white">
             <h1 class="products-hero-title">Thanh toán</h1>
-            <p class="products-hero-subtitle">Hoàn tất đơn hàng của bạn</p>
-            <div class="products-hero-breadcrumb">
-                <a asp-controller="Cart" asp-action="Index" class="text-light">Giỏ hàng</a>
-                <span class="mx-2">/</span>
-                <span>Thanh toán</span>
-            </div>
+            <p class="products-hero-subtitle">Nhập thông tin để hoàn tất đơn hàng</p>
         </div>
     </div>
 </div>
 
-@if (Model.Count == 0)
-{
-    <section class="py-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-md-6 text-center py-5">
-                    <div class="empty-state-icon mb-4">
-                        <i class="fas fa-shopping-cart"></i>
-                    </div>
-                    <h2 class="empty-state-title">Giỏ hàng trống</h2>
-                    <p class="empty-state-text">Vui lòng thêm sản phẩm vào giỏ hàng trước khi thanh toán.</p>
-                    <a asp-controller="Cart" asp-action="Index" class="btn btn-primary btn-lg">
-                        <i class="fas fa-arrow-left me-2"></i>Về giỏ hàng
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
-}
-else
-{
-    <section class="py-5">
-        <div class="container">
-            <!-- Checkout Steps -->
-            <div class="checkout-steps mb-5">
-                <div class="row text-center">
-                    <div class="col-md-4 mb-4">
-                        <div class="step-item active">
-                            <div class="step-number">1</div>
-                            <div class="step-label">Giỏ hàng</div>
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <div class="col-lg-8">
+                <form asp-action="CheckoutSubmit" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="productId" value="@product.Id" />
+                    <input type="hidden" name="quantity" value="@quantity" />
+                    
+                    <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+                        <div class="card-header bg-primary text-white py-4">
+                            <h4 class="mb-0"><i class="fas fa-user me-3"></i>Thông tin giao hàng</h4>
                         </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="step-item active">
-                            <i class="fas fa-arrow-right step-arrow"></i>
-                            <div class="step-number">2</div>
-                            <div class="step-label">Thanh toán</div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="step-item">
-                            <div class="step-number">3</div>
-                            <div class="step-label">Hoàn tất</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row g-5">
-                <!-- Billing/Shipping Form -->
-                <div class="col-lg-8">
-                    <form asp-action="Checkout" method="post" id="checkoutForm" novalidate>
-                        <div class="card rounded-4 shadow-lg border-0 overflow-hidden">
-                            <div class="card-header bg-primary text-white py-4">
-                                <h4 class="mb-0 fw-bold"><i class="fas fa-user me-3"></i>Thông tin giao hàng</h4>
-                            </div>
-                            <div class="card-body p-5">
-                                <div class="row">
-                                    <div class="col-md-6 mb-4">
-                                        <label class="form-label fw-semibold">Họ và tên *</label>
-                                        <input type="text" name="CustomerName" class="form-control" required>
-                                    </div>
-                                    <div class="col-md-6 mb-4">
-                                        <label class="form-label fw-semibold">Số điện thoại *</label>
-                                        <input type="tel" name="CustomerPhone" class="form-control" required>
-                                    </div>
-                                    <div class="col-12 mb-4">
-                                        <label class="form-label fw-semibold">Email *</label>
-                                        <input type="email" name="CustomerEmail" class="form-control" required>
-                                    </div>
-                                    <div class="col-12 mb-4">
-                                        <label class="form-label fw-semibold">Địa chỉ giao hàng *</label>
-                                        <textarea name="ShippingAddress" class="form-control" rows="3" required placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố"></textarea>
-                                    </div>
-                                    <div class="col-12 mb-4">
-                                        <label class="form-label fw-semibold">Ghi chú đơn hàng</label>
-                                        <textarea name="Note" class="form-control" rows="3" placeholder="Yêu cầu đặc biệt (ví dụ: không kem tươi, giao sớm...)"></textarea>
-                                    </div>
+                        <div class="card-body p-5">
+                            <div class="row g-4">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Họ tên *</label>
+                                    <input type="text" name="customerName" class="form-control" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Số điện thoại *</label>
+                                    <input type="tel" name="customerPhone" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Email *</label>
+                                    <input type="email" name="customerEmail" class="form-control" required>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label fw-bold">Địa chỉ giao hàng *</label>
+                                    <textarea name="shippingAddress" class="form-control" rows="3" required placeholder="Số nhà, đường, phường, quận, tỉnh..."></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label">Ghi chú đơn hàng</label>
+                                    <textarea name="note" class="form-control" rows="2" placeholder="Yêu cầu đặc biệt (không đường, giao sớm...)"></textarea>
                                 </div>
                             </div>
                         </div>
-                    </form>
-                </div>
+                        <div class="card-footer bg-light border-0 py-4">
+                            <button type="submit" class="btn btn-success btn-lg px-5">
+                                <i class="fas fa-check me-2"></i>Hoàn tất đặt hàng
+                            </button>
+                            <a asp-action="Index" asp-controller="Product" class="btn btn-outline-secondary ms-3">Chọn sản phẩm khác</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
 
-                <!-- Order Summary Sticky -->
-                <div class="col-lg-4">
-                    <div class="checkout-summary sticky-top" style="top: 100px;">
-                        <div class="card rounded-4 shadow-lg border-0 overflow-hidden">
-                            <div class="card-header bg-success text-white py-4">
-                                <h5 class="mb-0 fw-bold"><i class="fas fa-receipt me-2"></i>Đơn hàng của bạn</h5>
-                            </div>
-                            <div class="card-body p-4">
-                                @foreach (var item in Model)
-                                {
-                                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 border-bottom">
-                                        <div>
-                                            <small>@item.Product.Name</small>
-                                            <div class="fw-bold">@item.Quantity x @String.Format("{0:N0}", item.Product.Price) VNĐ</div>
-                                        </div>
-                                        <div class="fw-bold">@String.Format("{0:N0}", item.Quantity * item.Product.Price) VNĐ</div>
-                                    </div>
-                                }
-                                <div class="border-top pt-3 mt-3">
-                                    <div class="d-flex justify-content-between h5 mb-0">
-                                        <span>Tổng tiền:</span>
-                                        <span class="text-primary fw-bold">@String.Format("{0:N0} VNĐ", total)</span>
-                                    </div>
+            <div class="col-lg-4">
+                <div class="card shadow-lg border-0 rounded-4 sticky-top" style="top: 100px;">
+                    <div class="card-header bg-success text-white py-4 rounded-top-4">
+                        <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Tóm tắt đơn hàng</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="product-summary mb-4">
+                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                            {
+                                <img src="@product.ImageUrl" alt="@product.Name" class="img-fluid rounded mb-3" style="max-height: 120px; object-fit: cover;">
+                            }
+                            <h6 class="fw-bold">@product.Name</h6>
+                            <p class="text-muted small mb-2">SL: @quantity x @product.Price.ToString("N0") VNĐ</p>
+                            <div class="border-top pt-3 mt-3">
+                                <div class="d-flex justify-content-between h4 mb-0 fw-bold">
+                                    <span>Tổng cộng</span>
+                                    <span class="text-primary">@total.ToString("N0") VNĐ</span>
                                 </div>
-                                <button type="submit" form="checkoutForm" class="btn btn-success btn-lg w-100 mt-4">
-                                    <i class="fas fa-check me-2"></i>
-                                    Hoàn tất đơn hàng
-                                </button>
-                                <a asp-action="Index" class="btn btn-outline-secondary w-100 mt-2">
-                                    <i class="fas fa-arrow-left me-2"></i>Quay lại giỏ hàng
-                                </a>
+                                <small class="text-muted d-block mt-1">Phí ship sẽ tính sau</small>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 }
-
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-    <script>
-        // Checkout form validation
-        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
-            if (!this.checkValidity()) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-            this.classList.add('was-validated');
-        });
-    </script>
-}
-

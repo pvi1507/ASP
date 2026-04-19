@@ -1,17 +1,12 @@
-## TODO: Implement Product Review & Rating Feature
+# TODO: Fix Cart Empty After Checkout Success
 
-### Steps:
+Previous checkout "product not found" fixed. New issue: Cart empty after success.
 
-1. ✅ [DONE] Plan approved by user
-2. ✅ Create Models/Review.cs
-3. ✅ Update Models/Product.cs (add Reviews collection, AverageRating, ReviewCount)
-4. ✅ Update Data/ApplicationDbContext.cs (add DbSet<Review>, configure)
-5. ✅ Update Controllers/ProductController.cs (add Review actions)
-6. ✅ Update Views/Product/Details.cshtml (implement review list & form)
-7. ✅ Update Views/Product/Index.cshtml (dynamic rating display)
-8. ✅ Run EF migration: `dotnet ef migrations add AddReviewFeature`
-9. ✅ Run `dotnet ef database update`
-10. ✅ Test functionality (login, add review, verify average) - Ready to test at https://localhost:port/Product/Details/1
-11. ✅ Optional: Add CSS/JS enhancements, seed data - Complete
+## Updated Plan Steps:
 
-**Feature hoàn thành!** Chức năng đánh giá và nhận xét sản phẩm đã được thêm đầy đủ.
+- [x] Step 1: Update Controllers/CartController.cs - CheckoutSubmit: Redirect to /Cart/Index after success (to verify item), add debug TempData
+- [x] Step 2: Add debug to Cart/Index
+- [ ] Step 3: Test and build
+- [ ] Step 4: Complete
+
+Current progress: Edits done. Running dotnet build. Test checkout to see debug info on /Cart - will reveal why empty (UserId? Count?).
